@@ -11,6 +11,9 @@
 
 - Uses a constructable stylesheet (`CSSStyleSheet`) when available.
 - Falls back to injecting a `<style>` tag into the shadow root when constructable stylesheets are not supported.
+- Story-3 refresh introduces responsive `.multiselect-grid` columns (200–240px), single-column mobile layout, `prefers-contrast` overrides, and print-friendly blocks.
+- Interactive states depend on CSS custom properties (`--input-border`, `--card-bg`, `--surface-bg`, `--primary-color`, `--focus-border`, `--focus-shadow`, `--option-pill-color`, `--option-pill-active-bg`, `--text-light`, `--form-bg`) so hosts can theme without editing the bundled CSS.
+- `.multiselect-option:has(.multiselect-input:checked)` is used for concise selection styling; browsers lacking `:has()` still show the default state, so documentation notes progressive enhancement expectations.
 
 ## Lifecycle
 

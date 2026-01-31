@@ -92,6 +92,13 @@ The component renders the following structure inside its shadow root:
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
 
+## Styling
+
+- `ckMultiselectGridCSS` delivers the Story-3 responsive layout: `.multiselect-grid` auto-fits 200–240px columns (depending on viewport), collapses to a single column under 576px, and switches to block layout with page-break guards when printing.
+- `.multiselect-option` cards use CSS custom properties for border/background colors, hover/focus transitions, and print/contrast overrides. Checked states rely on `.multiselect-option:has(.multiselect-input:checked)` so the entire card reflects selection.
+- `.multiselect-input` is visually replaced by a custom checkbox that renders an inline SVG checkmark when selected, while keyboard focus uses `--focus-border`/`--focus-shadow` variables.
+- Theme tokens exposed: `--input-border`, `--card-bg`, `--surface-bg`, `--primary-color`, `--focus-border`, `--focus-shadow`, `--option-pill-color`, `--option-pill-active-bg`, `--text-light`, `--form-bg`.
+
 ## Removed Attributes
 
 These legacy attributes remain removed and unsupported:

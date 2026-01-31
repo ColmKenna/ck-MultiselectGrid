@@ -49,7 +49,7 @@ import { CkMultiselectGrid } from '@colmkenna/ck-webcomponents';
 
 ### CkMultiselectGrid Component
 
-A small form header block that renders a label and helper text.
+An accessible multiselect grid that combines a configurable `<fieldset>` header with a pill-based list of checkboxes driven entirely by attributes.
 
 ```html
 <!-- Basic usage -->
@@ -66,6 +66,12 @@ A small form header block that renders a label and helper text.
   fieldset-id="scopes-fieldset"
   fieldset-class="scope-block"
 ></ck-multiselect-grid>
+
+<!-- Drive the checkbox list via JSON attributes -->
+<ck-multiselect-grid
+  availableItems='["Scope.Read","Scope.Write","Scope.Manage"]'
+  selectedItems='["Scope.Write"]'
+></ck-multiselect-grid>
 ```
 
 #### Attributes
@@ -77,6 +83,8 @@ A small form header block that renders a label and helper text.
 | `discription` | string | "Choose which resource scopes this client is allowed to request." | Helper text (legacy spelling; `description` wins if both exist) |
 | `fieldset-id` | string | `scopes-fieldset` | Sets the `<fieldset>` `id` that wraps the form group |
 | `fieldset-class` | string | `""` | Appends one or more classes in addition to the default `multiselect-fieldset` |
+| `availableItems` | JSON array | `[]` | Array of strings or objects (`{ id?, name?, label?, value? }`) describing each checkbox option |
+| `selectedItems` | JSON array | `[]` | Array of strings referencing the option `value` entries that should render as checked |
 
 #### Properties
 
@@ -86,6 +94,11 @@ The component also supports JavaScript property access:
 const multiselectGrid = document.querySelector('ck-multiselect-grid');
 multiselectGrid.title = 'Select Resource Scopes';
 multiselectGrid.description = 'Choose which resource scopes this client is allowed to request.';
+multiselectGrid.setAttribute(
+  'availableItems',
+  JSON.stringify(['Scope.Read', 'Scope.Write'])
+);
+multiselectGrid.setAttribute('selectedItems', JSON.stringify(['Scope.Read']));
 ```
 
 ## 🛠️ Development

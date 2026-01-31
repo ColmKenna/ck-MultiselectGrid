@@ -1,4 +1,5 @@
 import { CkMultiselectGrid } from '../../src/components/ck-multiselect-grid/ck-multiselect-grid';
+import { ckMultiselectGridCSS } from '../../src/components/ck-multiselect-grid/ck-multiselect-grid.styles';
 
 // Define the custom element before running tests
 beforeAll(() => {
@@ -228,5 +229,23 @@ describe('CkMultiselectGrid Component', () => {
     element.connectedCallback();
 
     expect(element.shadowRoot?.querySelectorAll('.form-group').length).toBe(1);
+  });
+});
+
+describe('CkMultiselectGrid styles', () => {
+  test('should include Story-3 responsive grid layout rules', () => {
+    expect(ckMultiselectGridCSS).toContain('.multiselect-fieldset');
+    expect(ckMultiselectGridCSS).toContain('.multiselect-grid');
+    expect(ckMultiselectGridCSS).toContain('grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));');
+    expect(ckMultiselectGridCSS).toContain('@media (min-width: 768px)');
+    expect(ckMultiselectGridCSS).toContain('@media (max-width: 575.98px)');
+  });
+
+  test('should apply interactive option + checkbox styling per Story-3 spec', () => {
+    expect(ckMultiselectGridCSS).toContain('.multiselect-option');
+    expect(ckMultiselectGridCSS).toContain('.multiselect-option:has(.multiselect-input:checked)');
+    expect(ckMultiselectGridCSS).toContain('.multiselect-input:checked');
+    expect(ckMultiselectGridCSS).toContain("background-image: url(\"data:image/svg+xml");
+    expect(ckMultiselectGridCSS).toContain('.multiselect-pill');
   });
 });
