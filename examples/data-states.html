@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Data States – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Sora", "Space Grotesk", system-ui, sans-serif;
+            background: #020617;
+            color: #e2e8f0;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 50px 24px 140px;
+        }
+
+        nav a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .example {
+            margin: 42px 0;
+            padding: 28px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 30px 120px rgba(2, 6, 23, 0.7);
+        }
+
+        .demo {
+            margin-top: 16px;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.5);
+            position: relative;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .status-bar span {
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.2);
+        }
+
+        .status-bar span[data-state="invalid"] {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fecaca;
+        }
+
+        button.inline {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #38bdf8;
+            color: #0f172a;
+        }
+
+        button.inline.secondary {
+            background: transparent;
+            border: 1px solid rgba(148, 163, 184, 0.6);
+            color: #e2e8f0;
+        }
+
+        .note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: rgba(248, 250, 252, 0.08);
+            border-left: 4px solid #7dd3fc;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(2, 6, 23, 0.65);
+            font-weight: 600;
+        }
+
+        .demo[data-busy="true"] .overlay {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Data States</h1>
+    <p>Visualize every meaningful state transition inside <code>&lt;ck-multiselect-grid&gt;</code>.</p>
+
+    <div class="example" id="empty-state">
+        <h3>Empty State</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="emptyGrid"></ck-multiselect-grid>
+            <div class="note">No options provided. The helper text explains what users should expect next.</div>
+        </div>
+    </div>
+
+    <div class="example" id="loading-state">
+        <h3>Loading State</h3>
+        <div class="demo" id="loadingWrapper">
+            <div class="overlay" id="loadingOverlay">Loading scopes…</div>
+            <ck-multiselect-grid id="loadingGrid"></ck-multiselect-grid>
+            <p id="loadingMessage"></p>
+        </div>
+    </div>
+
+    <div class="example" id="error-state">
+        <h3>Error State</h3>
+        <div class="demo" id="errorWrapper">
+            <ck-multiselect-grid id="errorGrid"></ck-multiselect-grid>
+            <p class="note" id="errorMessage">Waiting for data.</p>
+            <div class="toolbar">
+                <button class="inline" id="retryLoad">Retry</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="success-state">
+        <h3>Success State</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="successGrid"></ck-multiselect-grid>
+            <div class="status-bar" id="successStatus"></div>
+        </div>
+    </div>
+
+    <div class="example" id="disabled-state">
+        <h3>Disabled State</h3>
+        <div class="demo" id="dataDisabledDemo">
+            <ck-multiselect-grid id="dataDisabledGrid"></ck-multiselect-grid>
+            <button class="inline secondary" id="toggleDataDisabled">Toggle disabled</button>
+            <div class="note">All checkboxes are toggled via the open shadow root to respect disabled.</div>
+        </div>
+    </div>
+
+    <div class="example" id="partial-data">
+        <h3>Partial Data</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="partialGrid"></ck-multiselect-grid>
+            <p class="note" id="partialMessage"></p>
+        </div>
+    </div>
+
+    <div class="example" id="readonly-state">
+        <h3>Readonly State</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="readonlyGrid"></ck-multiselect-grid>
+            <p class="note">Pointer events disabled; selections are display-only.</p>
+        </div>
+    </div>
+
+    <div class="example" id="dirty-pristine">
+        <h3>Dirty vs. Pristine</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="dirtyGrid"></ck-multiselect-grid>
+            <div class="status-bar">
+                <span id="dirtyBadge">pristine</span>
+            </div>
+            <button class="inline secondary" id="markPristine">Mark pristine</button>
+        </div>
+    </div>
+
+    <div class="example" id="valid-invalid-state">
+        <h3>Valid / Invalid</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="validGrid"></ck-multiselect-grid>
+            <div class="status-bar">
+                <span id="validityBadge" data-state="invalid">invalid</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="pending-busy">
+        <h3>Pending / Busy</h3>
+        <div class="demo" id="pendingDemo" data-busy="false">
+            <div class="overlay">Checking policy…</div>
+            <ck-multiselect-grid id="pendingGrid"></ck-multiselect-grid>
+            <button class="inline" id="triggerPending">Simulate pending</button>
+        </div>
+    </div>
+
+    <div class="example" id="state-transitions">
+        <h3>State Transitions</h3>
+        <p>Drives the component through empty → loading → success as well as error recovery.</p>
+        <div class="demo" id="transitionDemo" data-busy="false">
+            <div class="overlay" id="transitionOverlay">Loading…</div>
+            <ck-multiselect-grid id="transitionGrid"></ck-multiselect-grid>
+            <div class="toolbar">
+                <button class="inline" id="goEmpty">Empty</button>
+                <button class="inline" id="goLoading">Loading</button>
+                <button class="inline" id="goSuccess">Success</button>
+                <button class="inline secondary" id="goError">Error</button>
+            </div>
+            <p id="transitionMessage">Idle</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData, observeSelections, snapshotState, markDirtyOnInteraction } from './shared-examples.js';
+
+        // Empty state
+        const emptyGrid = document.querySelector('#emptyGrid');
+        emptyGrid.title = 'No scopes yet';
+        emptyGrid.description = 'Add scopes from the admin console when available.';
+        setGridData(emptyGrid, []);
+
+        // Loading state
+        const loadingWrapper = document.querySelector('#loadingWrapper');
+        const loadingGrid = document.querySelector('#loadingGrid');
+        const loadingMessage = document.querySelector('#loadingMessage');
+        loadingWrapper.dataset.state = 'loading';
+        loadingWrapper.setAttribute('aria-busy', 'true');
+        loadingMessage.textContent = 'Fetching scopes…';
+        setTimeout(() => {
+            setGridData(loadingGrid, optionsCatalog.base.slice(0, 4));
+            loadingWrapper.dataset.state = 'ready';
+            loadingWrapper.removeAttribute('aria-busy');
+            loadingMessage.textContent = 'Loaded 4 scopes.';
+        }, 900);
+
+        // Error state
+        const errorGrid = document.querySelector('#errorGrid');
+        const errorMessage = document.querySelector('#errorMessage');
+        const retryLoad = document.querySelector('#retryLoad');
+        let failed = true;
+        function loadWithFailure() {
+            if (failed) {
+                errorMessage.textContent = 'Network error. Click retry.';
+                setGridData(errorGrid, []);
+            } else {
+                setGridData(errorGrid, optionsCatalog.base.slice(0, 3));
+                errorMessage.textContent = 'Recovered after retry.';
+            }
+        }
+        retryLoad.addEventListener('click', () => {
+            failed = false;
+            loadWithFailure();
+        });
+        loadWithFailure();
+
+        // Success state
+        const successGrid = document.querySelector('#successGrid');
+        const successStatus = document.querySelector('#successStatus');
+        setGridData(successGrid, optionsCatalog.base.slice(0, 5), ['scope.read', 'scope.write']);
+        observeSelections(successGrid, state => {
+            successStatus.textContent = `Persisted ${state.checkedCount}/${state.total} scopes.`;
+        });
+
+        // Disabled state
+        const dataDisabledGrid = document.querySelector('#dataDisabledGrid');
+        const toggleDataDisabled = document.querySelector('#toggleDataDisabled');
+        setGridData(dataDisabledGrid, optionsCatalog.base.slice(0, 4));
+        let disabled = false;
+        function updateDisabled() {
+            const inputs = dataDisabledGrid.shadowRoot?.querySelectorAll('input') ?? [];
+            inputs.forEach(input => (input.disabled = disabled));
+            toggleDataDisabled.textContent = disabled ? 'Enable' : 'Disable';
+        }
+        toggleDataDisabled.addEventListener('click', () => {
+            disabled = !disabled;
+            updateDisabled();
+        });
+        updateDisabled();
+
+        // Partial data
+        const partialGrid = document.querySelector('#partialGrid');
+        const partialMessage = document.querySelector('#partialMessage');
+        const partialOptions = ['scope.read', { label: 'Scope.Write', value: 'scope.write' }, { label: 'Legacy Scope' }];
+        setGridData(partialGrid, partialOptions, ['Legacy Scope']);
+        partialMessage.textContent = 'Legacy Scope synthesized for persisted data.';
+
+        // Readonly state
+        const readonlyGrid = document.querySelector('#readonlyGrid');
+        setGridData(readonlyGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        readonlyGrid.style.pointerEvents = 'none';
+        readonlyGrid.style.opacity = '0.65';
+
+        // Dirty vs pristine
+        const dirtyGrid = document.querySelector('#dirtyGrid');
+        const dirtyBadge = document.querySelector('#dirtyBadge');
+        const markPristineBtn = document.querySelector('#markPristine');
+        setGridData(dirtyGrid, optionsCatalog.base.slice(0, 4));
+        markDirtyOnInteraction(dirtyGrid, dirtyBadge);
+        markPristineBtn.addEventListener('click', () => {
+            dirtyGrid.dataset.dirty = 'false';
+            dirtyBadge.textContent = 'pristine';
+        });
+
+        // Valid / invalid
+        const validGrid = document.querySelector('#validGrid');
+        const validityBadge = document.querySelector('#validityBadge');
+        setGridData(validGrid, optionsCatalog.base.slice(0, 5));
+        function refreshValidity(state) {
+            if (state.checkedCount >= 2) {
+                validityBadge.dataset.state = 'valid';
+                validityBadge.textContent = 'valid';
+            } else {
+                validityBadge.dataset.state = 'invalid';
+                validityBadge.textContent = 'invalid';
+            }
+        }
+        observeSelections(validGrid, refreshValidity);
+        refreshValidity(snapshotState(validGrid));
+
+        // Pending / busy
+        const pendingDemo = document.querySelector('#pendingDemo');
+        const pendingGrid = document.querySelector('#pendingGrid');
+        const triggerPending = document.querySelector('#triggerPending');
+        setGridData(pendingGrid, optionsCatalog.base.slice(0, 4));
+        triggerPending.addEventListener('click', () => {
+            pendingDemo.dataset.busy = 'true';
+            setTimeout(() => {
+                pendingDemo.dataset.busy = 'false';
+            }, 1000);
+        });
+
+        // State transitions
+        const transitionDemo = document.querySelector('#transitionDemo');
+        const transitionGrid = document.querySelector('#transitionGrid');
+        const transitionOverlay = document.querySelector('#transitionOverlay');
+        const transitionMessage = document.querySelector('#transitionMessage');
+        const goEmpty = document.querySelector('#goEmpty');
+        const goLoading = document.querySelector('#goLoading');
+        const goSuccess = document.querySelector('#goSuccess');
+        const goError = document.querySelector('#goError');
+
+        function setState(name) {
+            transitionDemo.dataset.busy = name === 'loading' ? 'true' : 'false';
+            transitionOverlay.textContent = name === 'loading' ? 'Loading…' : 'Idle';
+            switch (name) {
+                case 'empty':
+                    setGridData(transitionGrid, []);
+                    transitionMessage.textContent = 'Empty state';
+                    break;
+                case 'loading':
+                    transitionMessage.textContent = 'Loading';
+                    setTimeout(() => {
+                        if (transitionDemo.dataset.busy === 'true') {
+                            setState('success');
+                        }
+                    }, 700);
+                    break;
+                case 'success':
+                    setGridData(transitionGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+                    transitionMessage.textContent = 'Success state';
+                    transitionDemo.dataset.busy = 'false';
+                    break;
+                case 'error':
+                    setGridData(transitionGrid, []);
+                    transitionMessage.textContent = 'Error state';
+                    transitionDemo.dataset.busy = 'false';
+                    break;
+            }
+        }
+
+        goEmpty.addEventListener('click', () => setState('empty'));
+        goLoading.addEventListener('click', () => setState('loading'));
+        goSuccess.addEventListener('click', () => setState('success'));
+        goError.addEventListener('click', () => setState('error'));
+        setState('empty');
+    </script>
+</body>
+</html>

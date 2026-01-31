@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Form Integration – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+            background: #f4f1ea;
+            color: #1f2933;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+        }
+
+        nav a {
+            color: #1f2933;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .example {
+            margin: 48px 0;
+            padding: 28px;
+            border-radius: 20px;
+            border: 2px solid #e0d8c3;
+            background: #fff;
+            box-shadow: 0 30px 90px rgba(31, 41, 51, 0.08);
+        }
+
+        .demo {
+            margin: 18px 0;
+            padding: 20px;
+            border-radius: 16px;
+            background: #f8f6f0;
+        }
+
+        pre.code {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 18px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #fff7ed;
+            border-left: 4px solid #fb923c;
+            padding: 14px;
+            border-radius: 10px;
+        }
+
+        form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .badge[data-state="invalid"] {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge[data-state="valid"] {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        button.primary,
+        button.secondary {
+            border: none;
+            padding: 10px 16px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button.primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid #1f2933;
+            color: #1f2933;
+        }
+
+        ul.event-log {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 160px;
+            overflow-y: auto;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        ul.event-log li {
+            padding: 3px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .status-table {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .status-card {
+            padding: 12px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .error-text {
+            color: #b91c1c;
+            font-weight: 600;
+        }
+
+        .grid-wrapper[data-state="loading"] {
+            opacity: 0.5;
+            position: relative;
+        }
+
+        .grid-wrapper[data-state="loading"]::after {
+            content: 'Loading…';
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.75);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Form Integration</h1>
+    <p>Use <code>&lt;ck-multiselect-grid&gt;</code> inside forms, track touched/dirty states, surface errors, and coordinate with other controls.</p>
+
+    <div class="example" id="basic-form">
+        <h3>Basic Form</h3>
+        <p>Serializes selections into a hidden input during submit.</p>
+        <div class="demo">
+            <form id="scopeForm">
+                <ck-multiselect-grid id="formGrid"></ck-multiselect-grid>
+                <button class="primary" type="submit">Submit</button>
+                <p id="formOutput"></p>
+            </form>
+        </div>
+        <div class="note">The component lives outside the form&#39;s native serialization scope, so syncing to hidden inputs keeps submissions complete.</div>
+    </div>
+
+    <div class="example" id="validation-states">
+        <h3>Validation States</h3>
+        <p>Tracks pristine vs. touched, valid vs. invalid, and a simulated pending check.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="validationFormGrid"></ck-multiselect-grid>
+            <div class="badge-row">
+                <span class="badge" id="pristineBadge">pristine</span>
+                <span class="badge" id="touchedBadge">touched: false</span>
+                <span class="badge" id="validBadge" data-state="invalid">invalid</span>
+                <span class="badge" id="pendingBadge">pending: false</span>
+            </div>
+            <button class="secondary" id="runValidation">Run validation</button>
+        </div>
+    </div>
+
+    <div class="example" id="error-display">
+        <h3>Error Display</h3>
+        <p>Inline messaging that reacts to user edits and programmatic validation.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="errorGrid"></ck-multiselect-grid>
+            <p class="error-text" id="inlineError">Select at least two scopes.</p>
+            <div class="toolbar">
+                <button class="secondary" id="forceError">Force error</button>
+                <button class="secondary" id="clearError">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="dynamic-form">
+        <h3>Dynamic Form</h3>
+        <p>Add and remove component instances programmatically while keeping validation intact.</p>
+        <div class="demo">
+            <div class="toolbar">
+                <button class="secondary" id="addInstance">Add scope grid</button>
+                <button class="secondary" id="removeInstance">Remove</button>
+            </div>
+            <div id="dynamicContainer" class="status-table"></div>
+        </div>
+    </div>
+
+    <div class="example" id="form-events">
+        <h3>Form Events</h3>
+        <p>Captures focus, blur, change, and custom events for auditing.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="eventGrid"></ck-multiselect-grid>
+            <ul class="event-log" id="eventLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="form-reset">
+        <h3>Form Reset</h3>
+        <p>Shows the difference between <code>form.reset()</code> and rehydrating <code>selectedItems</code>.</p>
+        <div class="demo">
+            <form id="resetForm">
+                <ck-multiselect-grid id="resetGrid"></ck-multiselect-grid>
+                <div class="toolbar">
+                    <button class="secondary" type="reset">form.reset()</button>
+                    <button class="secondary" id="gridReset" type="button">grid.reset()</button>
+                </div>
+                <p id="resetState"></p>
+            </form>
+        </div>
+    </div>
+
+    <div class="example" id="required-optional">
+        <h3>Required vs. Optional</h3>
+        <p>Combines a required instance with an optional one, showing validation badges.</p>
+        <div class="demo">
+            <div class="status-table">
+                <div class="status-card">
+                    <h4>Required Scopes</h4>
+                    <ck-multiselect-grid id="requiredGrid"></ck-multiselect-grid>
+                    <p class="error-text" id="requiredMessage">Required field.</p>
+                </div>
+                <div class="status-card">
+                    <h4>Optional Scopes</h4>
+                    <ck-multiselect-grid id="optionalGrid"></ck-multiselect-grid>
+                    <p>Optional—no validation.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="disabled-state">
+        <h3>Disabled State in Forms</h3>
+        <p>Programmatically disables every checkbox and ensures it is ignored during submit.</p>
+        <div class="demo grid-wrapper" id="disabledWrapper">
+            <form id="disabledForm">
+                <ck-multiselect-grid id="disabledGrid"></ck-multiselect-grid>
+                <div class="toolbar">
+                    <button class="secondary" type="button" id="toggleDisabled">Disable component</button>
+                    <button class="secondary" type="submit">Submit</button>
+                </div>
+                <p id="disabledOutput"></p>
+            </form>
+        </div>
+        <div class="note">Disabling requires iterating over shadow checkboxes—see script below.</div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData, observeSelections, syncHiddenInput, snapshotState } from './shared-examples.js';
+
+        // Basic form
+        const scopeForm = document.querySelector('#scopeForm');
+        const formGrid = document.querySelector('#formGrid');
+        const formOutput = document.querySelector('#formOutput');
+        setGridData(formGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        syncHiddenInput(scopeForm, formGrid, 'scopes');
+        scopeForm.addEventListener('submit', event => {
+            event.preventDefault();
+            formOutput.textContent = `Submitted payload: ${scopeForm.querySelector('input[name="scopes"]').value}`;
+        });
+
+        // Validation states
+        const validationGrid = document.querySelector('#validationFormGrid');
+        const pristineBadge = document.querySelector('#pristineBadge');
+        const touchedBadge = document.querySelector('#touchedBadge');
+        const validBadge = document.querySelector('#validBadge');
+        const pendingBadge = document.querySelector('#pendingBadge');
+        let touched = false;
+        let pristine = true;
+        let pending = false;
+        setGridData(validationGrid, optionsCatalog.base.slice(0, 5));
+
+        function updateValidationBadges(state) {
+            touchedBadge.textContent = `touched: ${touched}`;
+            pristineBadge.textContent = pristine ? 'pristine' : 'dirty';
+            if (state.checkedCount > 0) {
+                validBadge.dataset.state = 'valid';
+                validBadge.textContent = 'valid';
+            } else {
+                validBadge.dataset.state = 'invalid';
+                validBadge.textContent = 'invalid';
+            }
+        }
+
+        observeSelections(validationGrid, state => {
+            touched = true;
+            pristine = false;
+            updateValidationBadges(state);
+        });
+
+        function runAsyncValidation() {
+            pending = true;
+            pendingBadge.textContent = 'pending: true';
+            pendingBadge.dataset.state = '';
+            setTimeout(() => {
+                pending = false;
+                pendingBadge.textContent = 'pending: false';
+                updateValidationBadges(snapshotState(validationGrid));
+            }, 800);
+        }
+
+        document.querySelector('#runValidation').addEventListener('click', () => {
+            runAsyncValidation();
+        });
+
+        // Error display
+        const errorGrid = document.querySelector('#errorGrid');
+        const inlineError = document.querySelector('#inlineError');
+        setGridData(errorGrid, optionsCatalog.base.slice(0, 5));
+        function evaluateError(state) {
+            if (state.checkedCount < 2) {
+                inlineError.textContent = 'Please select at least two scopes.';
+            } else {
+                inlineError.textContent = '';
+            }
+        }
+        observeSelections(errorGrid, evaluateError);
+        document.querySelector('#forceError').addEventListener('click', () => {
+            inlineError.textContent = 'Server rejected scopes. Try again.';
+        });
+        document.querySelector('#clearError').addEventListener('click', () => evaluateError(snapshotState(errorGrid)));
+
+        // Dynamic form
+        const dynamicContainer = document.querySelector('#dynamicContainer');
+        let instanceCount = 0;
+        function addInstance() {
+            instanceCount += 1;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'status-card';
+            wrapper.dataset.instance = String(instanceCount);
+            wrapper.innerHTML = `<h4>Instance ${instanceCount}</h4><ck-multiselect-grid></ck-multiselect-grid><p class="error-text">0 scopes</p>`;
+            dynamicContainer.appendChild(wrapper);
+            const grid = wrapper.querySelector('ck-multiselect-grid');
+            setGridData(grid, optionsCatalog.base, instanceCount % 2 ? ['scope.read'] : []);
+            const meter = wrapper.querySelector('p');
+            observeSelections(grid, state => {
+                meter.textContent = `${state.checkedCount} scope(s)`;
+            });
+        }
+        document.querySelector('#addInstance').addEventListener('click', addInstance);
+        document.querySelector('#removeInstance').addEventListener('click', () => {
+            const last = dynamicContainer.lastElementChild;
+            if (last) last.remove();
+        });
+        addInstance();
+
+        // Form events
+        const eventGrid = document.querySelector('#eventGrid');
+        const eventLog = document.querySelector('#eventLog');
+        setGridData(eventGrid, optionsCatalog.base.slice(0, 4));
+        function log(message) {
+            const row = document.createElement('li');
+            row.textContent = `${new Date().toLocaleTimeString()} • ${message}`;
+            eventLog.prepend(row);
+            const items = Array.from(eventLog.querySelectorAll('li'));
+            if (items.length > 10) items.slice(10).forEach(li => li.remove());
+        }
+        eventGrid.addEventListener('ck-multiselect-option-selected', event => {
+            log(`selected ${event.detail.option.value}`);
+        });
+        eventGrid.addEventListener('ck-multiselect-option-unselected', event => {
+            log(`unselected ${event.detail.option.value}`);
+        });
+        eventGrid.addEventListener('focusin', () => log('focusin'));
+        eventGrid.addEventListener('focusout', () => log('focusout'));
+
+        // Reset behavior
+        const resetForm = document.querySelector('#resetForm');
+        const resetGrid = document.querySelector('#resetGrid');
+        const resetState = document.querySelector('#resetState');
+        setGridData(resetGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        const defaultSelections = ['scope.read'];
+        resetForm.addEventListener('reset', () => {
+            resetState.textContent = 'form.reset() fired – component retains selections until re-render.';
+        });
+        document.querySelector('#gridReset').addEventListener('click', () => {
+            resetGrid.setAttribute('selectedItems', JSON.stringify(defaultSelections));
+            resetState.textContent = 'grid.setAttribute(...) reapplied baseline selections.';
+        });
+
+        // Required vs optional
+        const requiredGrid = document.querySelector('#requiredGrid');
+        const optionalGrid = document.querySelector('#optionalGrid');
+        const requiredMessage = document.querySelector('#requiredMessage');
+        setGridData(requiredGrid, optionsCatalog.base.slice(0, 3));
+        setGridData(optionalGrid, optionsCatalog.base.slice(3, 6));
+        function updateRequired(state) {
+            if (state.checkedCount === 0) {
+                requiredMessage.textContent = 'Required field.';
+            } else {
+                requiredMessage.textContent = `${state.checkedCount} scope(s) selected.`;
+            }
+        }
+        observeSelections(requiredGrid, updateRequired);
+        updateRequired(snapshotState(requiredGrid));
+
+        // Disabled state
+        const disabledWrapper = document.querySelector('#disabledWrapper');
+        const disabledGrid = document.querySelector('#disabledGrid');
+        const disabledForm = document.querySelector('#disabledForm');
+        const disabledOutput = document.querySelector('#disabledOutput');
+        const toggleDisabled = document.querySelector('#toggleDisabled');
+        let isDisabled = false;
+        setGridData(disabledGrid, optionsCatalog.base.slice(0, 4));
+
+        function setDisabledState(disabled) {
+            isDisabled = disabled;
+            toggleDisabled.textContent = disabled ? 'Enable component' : 'Disable component';
+            const inputs = disabledGrid.shadowRoot?.querySelectorAll('input') ?? [];
+            inputs.forEach(input => {
+                input.disabled = disabled;
+            });
+            disabledWrapper.dataset.state = disabled ? 'loading' : 'ready';
+            disabledGrid.dataset.disabled = disabled ? 'true' : 'false';
+        }
+
+        toggleDisabled.addEventListener('click', () => {
+            setDisabledState(!isDisabled);
+        });
+
+        disabledForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const state = snapshotState(disabledGrid);
+            disabledOutput.textContent = isDisabled ? 'Submission ignored while disabled.' : `Submitted: ${JSON.stringify(state.selected)}`;
+        });
+
+        setDisabledState(false);
+    </script>
+</body>
+</html>

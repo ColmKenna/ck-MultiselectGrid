@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Advanced Usage – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "General Sans", "Space Grotesk", system-ui, sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0%, #020617 60%);
+            color: #e2e8f0;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+        }
+
+        nav a {
+            color: #7dd3fc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .example {
+            margin: 48px 0;
+            padding: 28px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 35px 120px rgba(2, 6, 23, 0.7);
+        }
+
+        .demo {
+            margin: 16px 0;
+            padding: 20px;
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.55);
+        }
+
+        pre.code {
+            background: #020617;
+            color: #e2e8f0;
+            padding: 18px;
+            border-radius: 14px;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: rgba(253, 224, 71, 0.1);
+            border-left: 4px solid #facc15;
+            padding: 14px 18px;
+            border-radius: 12px;
+            color: #fef9c3;
+        }
+
+        .state-grid {
+            display: grid;
+            gap: 8px;
+            margin-top: 12px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.9rem;
+        }
+
+        button.inline {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 999px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        button.inline.secondary {
+            background: transparent;
+            border: 1px solid rgba(125, 211, 252, 0.6);
+            color: #7dd3fc;
+        }
+
+        .toolbar {
+            margin-bottom: 12px;
+        }
+
+        ul.event-log {
+            list-style: none;
+            padding: 0;
+            margin: 12px 0 0;
+            max-height: 160px;
+            overflow-y: auto;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.9rem;
+        }
+
+        ul.event-log li {
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Advanced Usage</h1>
+    <p>Push the component with large datasets, imperative orchestration, and recovery workflows.</p>
+
+    <div class="example" id="all-attributes">
+        <h3>All Attributes Combined</h3>
+        <p>Simultaneously controls titles, helper copy, fieldset metadata, and initial selections.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="fullControl" class="panel"></ck-multiselect-grid>
+        </div>
+        <pre class="code"><code>fullControl.title = 'Provision OAuth scopes';
+fullControl.description = 'All changes are persisted once you hit Save.';
+fullControl.setAttribute('fieldset-id', 'provisioning');
+fullControl.setAttribute('fieldset-class', 'provision stack');
+fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.manage.apps']));</code></pre>
+    </div>
+
+    <div class="example" id="complex-data">
+        <h3>Complex Data Structures</h3>
+        <p>Mixes string entries, explicit objects, and synthesized selections that are no longer in the dataset.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="complexGrid"></ck-multiselect-grid>
+            <div class="state-grid" id="complexReadout"></div>
+        </div>
+        <div class="note">Missing values (<code>scope.legacy</code>) are auto-generated so users can still deselect them.</div>
+    </div>
+
+    <div class="example" id="performance-optimization">
+        <h3>Performance Optimization</h3>
+        <p>Chunked updates reduce DOM churn when rendering dozens of options.</p>
+        <div class="demo">
+            <div class="toolbar">
+                <button class="inline" id="renderLarge">Render 48 options</button>
+                <button class="inline secondary" id="renderSmall">Render 12 options</button>
+            </div>
+            <ck-multiselect-grid id="performanceGrid"></ck-multiselect-grid>
+            <div class="state-grid" id="performanceReadout"></div>
+        </div>
+        <div class="note">Batch attribute writes within <code>requestAnimationFrame</code> to keep frames under 16ms.</div>
+    </div>
+
+    <div class="example" id="method-side-effects">
+        <h3>Method Side Effects (Imperative Helpers)</h3>
+        <p>Even without public methods, you can create helper functions that mutate attributes while logging the resulting events.</p>
+        <div class="demo">
+            <div class="toolbar">
+                <button class="inline" id="selectAll">Select all</button>
+                <button class="inline" id="clearAll">Clear all</button>
+                <button class="inline secondary" id="randomize">Randomize</button>
+            </div>
+            <ck-multiselect-grid id="methodGrid"></ck-multiselect-grid>
+            <ul class="event-log" id="methodLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="programmatic-state">
+        <h3>Programmatic State Manipulation</h3>
+        <p>Synchronizes the grid with a “template” dropdown that swaps entire selection presets.</p>
+        <div class="demo">
+            <label>
+                Preset
+                <select id="presetSelect">
+                    <option value="read-only">Read Only</option>
+                    <option value="writer">Writer</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </label>
+            <ck-multiselect-grid id="presetGrid"></ck-multiselect-grid>
+            <div class="state-grid" id="presetReadout"></div>
+        </div>
+    </div>
+
+    <div class="example" id="error-recovery">
+        <h3>Error Recovery</h3>
+        <p>Demonstrates how to detect malformed JSON, surface a warning, and rehydrate the component with sanitized data.</p>
+        <div class="demo">
+            <div class="toolbar">
+                <button class="inline" id="injectBad">Inject malformed JSON</button>
+                <button class="inline secondary" id="recoverGood">Recover</button>
+            </div>
+            <ck-multiselect-grid id="resilientGrid"></ck-multiselect-grid>
+            <p class="note" id="errorMessage">Healthy dataset.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData, observeSelections } from './shared-examples.js';
+
+        const fullControl = document.querySelector('#fullControl');
+        setGridData(fullControl, optionsCatalog.complex, ['scope.read', 'scope.manage.apps']);
+        fullControl.title = 'Provision OAuth scopes';
+        fullControl.description = 'All changes are persisted once you hit Save.';
+        fullControl.setAttribute('fieldset-id', 'provisioning');
+        fullControl.setAttribute('fieldset-class', 'provision stack');
+
+        const complexGrid = document.querySelector('#complexGrid');
+        const complexReadout = document.querySelector('#complexReadout');
+        const complexData = [
+            'scope.read',
+            { label: 'Scope.Write', value: 'scope.write' },
+            { label: 'Scope.ManageApps', value: 'scope.manage.apps' },
+            { label: 'Scope.Reporting', value: 'scope.reporting' }
+        ];
+        setGridData(complexGrid, complexData, ['scope.legacy', 'scope.write']);
+        observeSelections(complexGrid, state => {
+            complexReadout.innerHTML = `Total: ${state.total} • Synthetic selections preserved: ${state.selected.includes('scope.legacy')}`;
+        });
+
+        const performanceGrid = document.querySelector('#performanceGrid');
+        const performanceReadout = document.querySelector('#performanceReadout');
+        const renderLarge = document.querySelector('#renderLarge');
+        const renderSmall = document.querySelector('#renderSmall');
+
+        function writePerformance(options) {
+            requestAnimationFrame(() => {
+                setGridData(performanceGrid, options, options.slice(0, 2).map(item => item.value));
+            });
+        }
+
+        observeSelections(performanceGrid, state => {
+            performanceReadout.textContent = `${state.total} options rendered • ${state.checkedCount} selected`;
+        });
+
+        renderLarge.addEventListener('click', () => writePerformance(optionsCatalog.large));
+        renderSmall.addEventListener('click', () => writePerformance(optionsCatalog.medium.slice(0, 12)));
+        writePerformance(optionsCatalog.medium.slice(0, 12));
+
+        const methodGrid = document.querySelector('#methodGrid');
+        const methodLog = document.querySelector('#methodLog');
+        setGridData(methodGrid, optionsCatalog.base, ['scope.read']);
+
+        function setSelections(values) {
+            methodGrid.setAttribute('selectedItems', JSON.stringify(values));
+        }
+
+        document.querySelector('#selectAll').addEventListener('click', () => {
+            setSelections(optionsCatalog.base.map(option => option.value));
+        });
+
+        document.querySelector('#clearAll').addEventListener('click', () => setSelections([]));
+
+        document.querySelector('#randomize').addEventListener('click', () => {
+            const pick = optionsCatalog.base.filter(() => Math.random() > 0.5).map(option => option.value);
+            setSelections(pick);
+        });
+
+        methodGrid.addEventListener('ck-multiselect-option-selected', event => {
+            const item = document.createElement('li');
+            item.textContent = `selected • ${event.detail.option.value}`;
+            methodLog.prepend(item);
+        });
+        methodGrid.addEventListener('ck-multiselect-option-unselected', event => {
+            const item = document.createElement('li');
+            item.textContent = `unselected • ${event.detail.option.value}`;
+            methodLog.prepend(item);
+        });
+
+        const presetGrid = document.querySelector('#presetGrid');
+        const presetReadout = document.querySelector('#presetReadout');
+        const presetSelect = document.querySelector('#presetSelect');
+        setGridData(presetGrid, optionsCatalog.base, ['scope.read']);
+
+        const presets = {
+            'read-only': ['scope.read', 'scope.audit'],
+            writer: ['scope.read', 'scope.write', 'scope.reporting'],
+            admin: optionsCatalog.base.map(option => option.value)
+        };
+
+        function applyPreset(name) {
+            const selections = presets[name] ?? [];
+            presetGrid.setAttribute('selectedItems', JSON.stringify(selections));
+        }
+
+        presetSelect.addEventListener('change', event => {
+            applyPreset(event.target.value);
+        });
+
+        observeSelections(presetGrid, state => {
+            presetReadout.textContent = `${presetSelect.value} preset • ${state.checkedCount} scopes`;
+        });
+        applyPreset('read-only');
+
+        const resilientGrid = document.querySelector('#resilientGrid');
+        const errorMessage = document.querySelector('#errorMessage');
+        setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+
+        document.querySelector('#injectBad').addEventListener('click', () => {
+            resilientGrid.setAttribute('availableItems', '[scope.read]');
+            errorMessage.textContent = 'Malformed JSON detected. Check console warnings.';
+        });
+
+        document.querySelector('#recoverGood').addEventListener('click', () => {
+            setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+            errorMessage.textContent = 'Healthy dataset.';
+        });
+    </script>
+</body>
+</html>

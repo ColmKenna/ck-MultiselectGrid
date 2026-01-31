@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Themes – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+            background: #0d0f1a;
+            color: #e2e8f0;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px 160px;
+        }
+
+        nav a {
+            color: #7dd3fc;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+        }
+
+        .example {
+            margin: 40px 0;
+            padding: 28px;
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            box-shadow: 0 40px 140px rgba(2, 6, 23, 0.8);
+        }
+
+        .demo {
+            margin-top: 16px;
+            padding: 22px;
+            border-radius: 18px;
+            background: rgba(2, 6, 23, 0.6);
+        }
+
+        .gallery {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-left: 4px solid #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+        }
+
+        label.slider {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        button.inline {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #38bdf8;
+            color: #0f172a;
+            margin: 4px;
+        }
+
+        button.inline.secondary {
+            background: transparent;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+        }
+
+        table.comparison {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        table.comparison th,
+        table.comparison td {
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .layout-grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        ck-multiselect-grid {
+            display: block;
+            border-radius: 18px;
+            padding: 12px;
+        }
+
+        ck-multiselect-grid[theme="light"] {
+            --card-bg: #ffffff;
+            --primary-color: #2563eb;
+            --input-border: #d0d7ef;
+            --option-pill-active-bg: #eff6ff;
+            --text-light: #0f172a;
+            --focus-border: #38bdf8;
+        }
+
+        ck-multiselect-grid[theme="dark"] {
+            --card-bg: #0f172a;
+            --primary-color: #fbbf24;
+            --input-border: #334155;
+            --option-pill-active-bg: #1e293b;
+            --text-light: #f8fafc;
+            --focus-border: #f59e0b;
+        }
+
+        ck-multiselect-grid[theme="high-contrast"] {
+            --card-bg: #000000;
+            --primary-color: #ffffff;
+            --input-border: #ffffff;
+            --option-pill-active-bg: #1f2937;
+            --text-light: #ffffff;
+            --focus-border: #facc15;
+        }
+
+        ck-multiselect-grid[theme="ocean"] {
+            --card-bg: #012a4a;
+            --primary-color: #00b4d8;
+            --input-border: #014f86;
+            --option-pill-active-bg: #013a63;
+            --text-light: #e0fbfc;
+        }
+
+        ck-multiselect-grid[theme="sunset"] {
+            --card-bg: #fff1eb;
+            --primary-color: #fb923c;
+            --input-border: #fec5bb;
+            --option-pill-active-bg: #ffd7ba;
+            --text-light: #7c2d12;
+        }
+
+        ck-multiselect-grid[theme="forest"] {
+            --card-bg: #022c22;
+            --primary-color: #16a34a;
+            --input-border: #14532d;
+            --option-pill-active-bg: #064e3b;
+            --text-light: #bbf7d0;
+        }
+
+        ck-multiselect-grid[theme="corporate"] {
+            --card-bg: #f8fafc;
+            --primary-color: #0ea5e9;
+            --input-border: #cbd5f5;
+            --option-pill-active-bg: #e0f2fe;
+            --text-light: #0f172a;
+        }
+
+        ck-multiselect-grid.fade-transition {
+            transition: background-color 280ms ease, color 280ms ease;
+        }
+
+        .controls {
+            margin: 12px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        ck-multiselect-grid.ocean-theme {
+            --card-bg: #012a4a;
+            --primary-color: #00b4d8;
+            --option-pill-active-bg: #013a63;
+            --text-light: #e0fbfc;
+        }
+
+        ck-multiselect-grid.corporate {
+            --card-bg: #f8fafc;
+            --primary-color: #0ea5e9;
+            --option-pill-active-bg: #e0f2fe;
+            --text-light: #0f172a;
+        }
+
+        ck-multiselect-grid.reader {
+            --card-bg: #fefae0;
+            --primary-color: #d97706;
+            --option-pill-active-bg: #fde68a;
+            --text-light: #7c2d12;
+        }
+
+        ck-multiselect-grid.neon {
+            --card-bg: #0f172a;
+            --primary-color: #a21caf;
+            --option-pill-active-bg: #4c1d95;
+            --text-light: #fdf2f8;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Themes Gallery</h1>
+    <p>Live, functional demos covering every recommended theming workflow.</p>
+
+    <div class="example" id="complete-themes">
+        <h3>Built-in Theme Gallery</h3>
+        <div class="demo gallery">
+            <div id="light-theme"><ck-multiselect-grid id="galleryLight" theme="light"></ck-multiselect-grid></div>
+            <div id="dark-theme"><ck-multiselect-grid id="galleryDark" theme="dark"></ck-multiselect-grid></div>
+            <div id="high-contrast-theme"><ck-multiselect-grid id="galleryContrast" theme="high-contrast"></ck-multiselect-grid></div>
+        </div>
+        <table class="comparison">
+            <tr><th>Theme</th><th>Best For</th><th>Key Tokens</th></tr>
+            <tr><td>Light</td><td>Daytime dashboards</td><td><code>#2563eb</code>, <code>#eff6ff</code></td></tr>
+            <tr><td>Dark</td><td>Low-light ops</td><td><code>#fbbf24</code>, <code>#1e293b</code></td></tr>
+            <tr><td>High Contrast</td><td>WCAG AAA, forced colors</td><td><code>#000000</code>/<code>#ffffff</code></td></tr>
+        </table>
+    </div>
+
+    <div class="example" id="theme-variables">
+        <h3>Theme Variables Reference</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="variableGrid" theme="light"></ck-multiselect-grid>
+            <div>
+                <label class="slider">Primary<input type="color" id="varPrimary" value="#2563eb" /></label>
+                <label class="slider">Card BG<input type="color" id="varCard" value="#ffffff" /></label>
+                <label class="slider">Text Light<input type="color" id="varText" value="#0f172a" /></label>
+                <label class="slider">Active BG<input type="color" id="varActive" value="#eff6ff" /></label>
+                <label class="slider">Input Border<input type="color" id="varBorder" value="#d0d7ef" /></label>
+                <label class="slider">Focus Border<input type="color" id="varFocus" value="#38bdf8" /></label>
+                <label class="slider">Surface BG<input type="color" id="varSurface" value="#f8fafc" /></label>
+                <label class="slider">Form BG<input type="color" id="varForm" value="#e2e8f0" /></label>
+                <label class="slider">Focus Shadow<input type="text" id="varShadow" value="0 0 0 3px rgba(56,189,248,0.35)" /></label>
+                <button class="inline secondary" id="resetVars">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="custom-theme-tutorial">
+        <h3>Custom Theme Tutorial</h3>
+        <div class="demo">
+            <ol>
+                <li>Start with the base component.</li>
+                <li>Apply a class (<code>.ocean-theme</code>).</li>
+                <li>Override CSS variables.</li>
+            </ol>
+            <ck-multiselect-grid id="tutorialGrid" class="ocean-theme"></ck-multiselect-grid>
+        </div>
+        <pre class="note">.ocean-theme {
+  --card-bg: #012a4a;
+  --primary-color: #00b4d8;
+  --text-light: #e0fbfc;
+}</pre>
+    </div>
+
+    <div class="example" id="theme-switching">
+        <h3>Theme Switching</h3>
+        <div class="demo">
+            <div class="controls">
+                <button class="inline" data-theme="light">Light</button>
+                <button class="inline" data-theme="dark">Dark</button>
+                <button class="inline" data-theme="sunset">Sunset</button>
+                <button class="inline" data-theme="forest">Forest</button>
+            </div>
+            <ck-multiselect-grid id="switcherA" class="fade-transition" theme="light"></ck-multiselect-grid>
+            <ck-multiselect-grid id="switcherB" class="fade-transition" theme="light"></ck-multiselect-grid>
+            <p class="note" id="switcherMessage">Current theme: light</p>
+        </div>
+    </div>
+
+    <div class="example" id="system-theme">
+        <h3>System Theme Integration</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="systemGrid" theme="light"></ck-multiselect-grid>
+            <button class="inline secondary" id="simulateSystem">Simulate system toggle</button>
+            <p class="note" id="systemNote">Listening to <code>prefers-color-scheme</code>.</p>
+        </div>
+    </div>
+
+    <div class="example" id="theme-transitions">
+        <h3>Theme Transitions &amp; Animations</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="transitionGrid" class="fade-transition" theme="light"></ck-multiselect-grid>
+            <button class="inline" id="transitionToggle">Toggle Theme</button>
+            <p class="note">Transitions honor <code>prefers-reduced-motion</code>.</p>
+        </div>
+    </div>
+
+    <div class="example" id="high-contrast">
+        <h3>High Contrast & Accessibility</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="contrastGrid" theme="high-contrast"></ck-multiselect-grid>
+            <p class="note">Meets WCAG AAA for text and focus rings.</p>
+        </div>
+    </div>
+
+    <div class="example" id="theme-composition">
+        <h3>Theme Composition</h3>
+        <p>Combine global themes with per-instance overrides and inline tokens.</p>
+        <div class="demo layout-grid">
+            <div>
+                <h4>Global class</h4>
+                <ck-multiselect-grid id="globalTheme" class="corporate"></ck-multiselect-grid>
+            </div>
+            <div>
+                <h4>Per-instance attribute</h4>
+                <ck-multiselect-grid id="instanceTheme" theme="ocean"></ck-multiselect-grid>
+            </div>
+            <div>
+                <h4>Inline override</h4>
+                <ck-multiselect-grid id="inlineTheme" style="--primary-color:#ec4899; --card-bg:#fdf2f8"></ck-multiselect-grid>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="real-world-themes">
+        <h3>Real-world Theme Examples</h3>
+        <p>Ready-to-copy presets for common product verticals.</p>
+        <div class="demo layout-grid">
+            <ck-multiselect-grid id="ecommerceTheme" theme="sunset"></ck-multiselect-grid>
+            <ck-multiselect-grid id="saasTheme" theme="corporate"></ck-multiselect-grid>
+            <ck-multiselect-grid id="contentTheme" class="reader"></ck-multiselect-grid>
+            <ck-multiselect-grid id="gamingTheme" class="neon"></ck-multiselect-grid>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData } from './shared-examples.js';
+
+        const instances = document.querySelectorAll('ck-multiselect-grid');
+        instances.forEach(instance => {
+            setGridData(instance, optionsCatalog.base.slice(0, 4));
+        });
+
+        // Theme variables playground
+        const variableGrid = document.querySelector('#variableGrid');
+        const varPrimary = document.querySelector('#varPrimary');
+        const varCard = document.querySelector('#varCard');
+        const varText = document.querySelector('#varText');
+        const varActive = document.querySelector('#varActive');
+        const varBorder = document.querySelector('#varBorder');
+        const varFocus = document.querySelector('#varFocus');
+        const varSurface = document.querySelector('#varSurface');
+        const varForm = document.querySelector('#varForm');
+        const varShadow = document.querySelector('#varShadow');
+        const resetVars = document.querySelector('#resetVars');
+        const defaultVars = {
+            '--primary-color': varPrimary.value,
+            '--card-bg': varCard.value,
+            '--text-light': varText.value,
+            '--option-pill-active-bg': varActive.value,
+            '--input-border': varBorder.value,
+            '--focus-border': varFocus.value,
+            '--surface-bg': varSurface.value,
+            '--form-bg': varForm.value,
+            '--focus-shadow': varShadow.value
+        };
+        function applyVarOverrides() {
+            variableGrid.style.setProperty('--primary-color', varPrimary.value);
+            variableGrid.style.setProperty('--card-bg', varCard.value);
+            variableGrid.style.setProperty('--text-light', varText.value);
+            variableGrid.style.setProperty('--option-pill-active-bg', varActive.value);
+            variableGrid.style.setProperty('--input-border', varBorder.value);
+            variableGrid.style.setProperty('--focus-border', varFocus.value);
+            variableGrid.style.setProperty('--surface-bg', varSurface.value);
+            variableGrid.style.setProperty('--form-bg', varForm.value);
+            variableGrid.style.setProperty('--focus-shadow', varShadow.value);
+        }
+        [
+            varPrimary,
+            varCard,
+            varText,
+            varActive,
+            varBorder,
+            varFocus,
+            varSurface,
+            varForm
+        ].forEach(input => input.addEventListener('input', applyVarOverrides));
+        varShadow.addEventListener('input', applyVarOverrides);
+        resetVars.addEventListener('click', () => {
+            Object.entries(defaultVars).forEach(([key, value]) => {
+                variableGrid.style.setProperty(key, value);
+            });
+            varPrimary.value = defaultVars['--primary-color'];
+            varCard.value = defaultVars['--card-bg'];
+            varText.value = defaultVars['--text-light'];
+            varActive.value = defaultVars['--option-pill-active-bg'];
+            varBorder.value = defaultVars['--input-border'];
+            varFocus.value = defaultVars['--focus-border'];
+            varSurface.value = defaultVars['--surface-bg'];
+            varForm.value = defaultVars['--form-bg'];
+            varShadow.value = defaultVars['--focus-shadow'];
+        });
+        applyVarOverrides();
+
+        // Theme switching with persistence
+        const switcherButtons = document.querySelectorAll('#theme-switching button[data-theme]');
+        const switcherA = document.querySelector('#switcherA');
+        const switcherB = document.querySelector('#switcherB');
+        const switcherMessage = document.querySelector('#switcherMessage');
+        const THEME_KEY = 'ck-multiselect-demo-theme';
+        function applyTheme(theme) {
+            switcherA.setAttribute('theme', theme);
+            switcherB.setAttribute('theme', theme);
+            localStorage.setItem(THEME_KEY, theme);
+            switcherMessage.textContent = `Current theme: ${theme}`;
+        }
+        switcherButtons.forEach(button => {
+            button.addEventListener('click', () => applyTheme(button.dataset.theme));
+        });
+        applyTheme(localStorage.getItem(THEME_KEY) ?? 'light');
+
+        // System theme integration
+        const systemGrid = document.querySelector('#systemGrid');
+        const systemNote = document.querySelector('#systemNote');
+        const simulateSystem = document.querySelector('#simulateSystem');
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        function syncSystemTheme(prefersDark) {
+            const theme = prefersDark ? 'dark' : 'light';
+            systemGrid.setAttribute('theme', theme);
+            systemNote.textContent = `System preference: ${theme}`;
+        }
+        if (mediaQuery.addEventListener) {
+            mediaQuery.addEventListener('change', event => syncSystemTheme(event.matches));
+        }
+        syncSystemTheme(mediaQuery.matches);
+        simulateSystem.addEventListener('click', () => {
+            syncSystemTheme(systemGrid.getAttribute('theme') !== 'dark');
+        });
+
+        // Theme transitions
+        const transitionGridEl = document.querySelector('#transitionGrid');
+        const transitionToggle = document.querySelector('#transitionToggle');
+        transitionToggle.addEventListener('click', () => {
+            const next = transitionGridEl.getAttribute('theme') === 'light' ? 'dark' : 'light';
+            transitionGridEl.setAttribute('theme', next);
+        });
+        const motionMedia = window.matchMedia('(prefers-reduced-motion: reduce)');
+        function handleMotionPreference(event) {
+            if (event.matches) {
+                transitionGridEl.classList.remove('fade-transition');
+            } else {
+                transitionGridEl.classList.add('fade-transition');
+            }
+        }
+        handleMotionPreference(motionMedia);
+        if (typeof motionMedia.addEventListener === 'function') {
+            motionMedia.addEventListener('change', handleMotionPreference);
+        } else if (typeof motionMedia.addListener === 'function') {
+            motionMedia.addListener(handleMotionPreference);
+        }
+
+        // Custom theme tutorial class ensures CSS variables exist
+        const tutorialGrid = document.querySelector('#tutorialGrid');
+        tutorialGrid.classList.add('ocean-theme');
+
+        // Theme composition extras
+        const globalTheme = document.querySelector('#globalTheme');
+        globalTheme.classList.add('corporate');
+        const inlineTheme = document.querySelector('#inlineTheme');
+        inlineTheme.setAttribute('theme', 'light');
+
+        // Real-world classes
+        const contentTheme = document.querySelector('#contentTheme');
+        const gamingTheme = document.querySelector('#gamingTheme');
+        contentTheme.style.setProperty('--card-bg', '#fefae0');
+        contentTheme.style.setProperty('--primary-color', '#d97706');
+        contentTheme.style.setProperty('--text-light', '#78350f');
+        gamingTheme.style.setProperty('--card-bg', '#0f172a');
+        gamingTheme.style.setProperty('--primary-color', '#a21caf');
+        gamingTheme.style.setProperty('--option-pill-active-bg', '#4c1d95');
+    </script>
+</body>
+</html>

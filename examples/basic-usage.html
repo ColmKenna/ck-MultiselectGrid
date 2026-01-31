@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Basic Usage – ck-multiselect-grid</title>
+    <style>
+        :root {
+            color-scheme: light;
+        }
+
+        body {
+            font-family: "Space Grotesk", "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px 80px;
+            background: #f7f5f2;
+            color: #0f172a;
+        }
+
+        nav a {
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 0.5rem;
+        }
+
+        p.lead {
+            font-size: 1.125rem;
+            color: #475569;
+        }
+
+        .example {
+            margin: 48px 0;
+            padding: 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+        }
+
+        .example h3 {
+            margin-top: 0;
+        }
+
+        .demo {
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 14px;
+            margin: 16px 0;
+        }
+
+        .state-panel {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+            font-family: "JetBrains Mono", "Fira Code", monospace;
+            font-size: 0.9rem;
+        }
+
+        .state-panel span {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 999px;
+        }
+
+        pre.code {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 18px;
+            border-radius: 14px;
+            overflow-x: auto;
+        }
+
+        .note {
+            background: #fff3cd;
+            padding: 14px;
+            border-radius: 12px;
+            border-left: 4px solid #facc15;
+            font-size: 0.95rem;
+        }
+
+        button.primary {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button.primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .validation-message {
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .validation-message[data-state="invalid"] {
+            color: #dc2626;
+        }
+
+        .validation-message[data-state="valid"] {
+            color: #047857;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Basic Usage</h1>
+    <p class="lead">The essentials for rendering <code>&lt;ck-multiselect-grid&gt;</code>, wiring attributes, reading internal state, and validating user choices.</p>
+
+    <div class="example" id="minimal-setup">
+        <h3>Minimal Setup</h3>
+        <p>Out-of-the-box instance with only the default attributes applied. The grid still renders accessible labels and events.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="minimalGrid"></ck-multiselect-grid>
+            <div class="state-panel">
+                <span id="minimalState">Selected: —</span>
+            </div>
+        </div>
+        <h4>HTML</h4>
+        <pre class="code"><code>&lt;ck-multiselect-grid id="minimalGrid"&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+        <h4>JavaScript</h4>
+        <pre class="code"><code>import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+import { optionsCatalog, setGridData, observeSelections } from './shared-examples.js';
+
+const minimalGrid = document.querySelector('#minimalGrid');
+setGridData(minimalGrid, optionsCatalog.base.slice(0, 3));
+observeSelections(minimalGrid, state => {
+  minimalState.textContent = `Selected: ${state.selected.join(', ') || 'none'}`;
+});</code></pre>
+        <div class="note">
+            Default copy is supplied by the component. Only data attributes are required.
+        </div>
+    </div>
+
+    <div class="example" id="common-attributes">
+        <h3>Common Attributes</h3>
+        <p>Demonstrates <code>title</code>, <code>description</code>, <code>fieldset-id</code>, and <code>fieldset-class</code> in one place.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="attributeGrid"></ck-multiselect-grid>
+        </div>
+        <pre class="code"><code>attributeGrid.title = 'API Scope Access';
+attributeGrid.description = 'Pick the scopes that should ship with the token.';
+attributeGrid.setAttribute('fieldset-id', 'scope-grid');
+attributeGrid.setAttribute('fieldset-class', 'stack scope-a');</code></pre>
+        <div class="note">
+            <strong>Testing hook:</strong> the <code>fieldset-id</code> attribute is ideal for <code>aria-describedby</code> targeting or integration tests.
+        </div>
+    </div>
+
+    <div class="example" id="default-styling">
+        <h3>Default Styling</h3>
+        <p>Illustrates the component without any custom CSS variables—only the provided design tokens defined at the page level.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="stylingGrid" class="default-theme"></ck-multiselect-grid>
+        </div>
+        <pre class="code"><code>.default-theme {
+  --card-bg: #ffffff;
+  --input-border: #cbd5f5;
+  --option-pill-active-bg: #e0f2fe;
+  --text-light: #0f172a;
+}</code></pre>
+    </div>
+
+    <div class="example" id="state-panel">
+        <h3>Internal State Display</h3>
+        <p>Reads directly from the open shadow root to display which checkboxes are checked, mirroring the component&#39;s internal truth.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="stateGrid"></ck-multiselect-grid>
+            <div class="state-panel" id="debugPanel"></div>
+        </div>
+        <pre class="code"><code>const debugPanel = document.querySelector('#debugPanel');
+observeSelections(stateGrid, state => {
+  debugPanel.innerHTML = `Selected (${state.checkedCount}): ${state.selected.join(', ')}`;
+});</code></pre>
+        <div class="note">
+            Because the shadow root is open, you can read checkbox state for debugging or analytics without patching the component.
+        </div>
+    </div>
+
+    <div class="example" id="validation-basics">
+        <h3>Validation Basics</h3>
+        <p>Simple “at least one scope” validation. The validation message toggles in real time as selections change.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="validationGrid"></ck-multiselect-grid>
+            <div class="state-panel">
+                <span id="validationState">Ready</span>
+            </div>
+            <button class="primary" id="validateButton">Validate selection</button>
+            <p class="validation-message" id="validationMessage" data-state="invalid">No scopes selected yet.</p>
+        </div>
+        <pre class="code"><code>function validateAtLeastOne(state) {
+  const message = document.querySelector('#validationMessage');
+  if (state.checkedCount === 0) {
+    message.dataset.state = 'invalid';
+    message.textContent = 'Select at least one scope.';
+    return false;
+  }
+  message.dataset.state = 'valid';
+  message.textContent = `${state.checkedCount} scope(s) ready.`;
+  return true;
+}
+
+observeSelections(validationGrid, state => {
+  validationState.textContent = `${state.checkedCount} selected`;
+  validateAtLeastOne(state);
+});
+
+document.querySelector('#validateButton').addEventListener('click', () => {
+  validateAtLeastOne(snapshotState(validationGrid));
+});</code></pre>
+        <div class="note">
+            Shadow DOM checkboxes are native inputs, so keyboard users retain the default checkbox workflow while validation stays external.
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData, observeSelections, snapshotState } from './shared-examples.js';
+
+        const minimalGrid = document.querySelector('#minimalGrid');
+        const minimalState = document.querySelector('#minimalState');
+        setGridData(minimalGrid, optionsCatalog.base.slice(0, 3));
+        observeSelections(minimalGrid, state => {
+            minimalState.textContent = `Selected: ${state.selected.join(', ') || 'none'}`;
+        });
+
+        const attributeGrid = document.querySelector('#attributeGrid');
+        setGridData(attributeGrid, optionsCatalog.base);
+        attributeGrid.title = 'API Scope Access';
+        attributeGrid.description = 'Pick the scopes that should ship with the token.';
+        attributeGrid.setAttribute('fieldset-id', 'scope-grid');
+        attributeGrid.setAttribute('fieldset-class', 'stack scope-a');
+
+        const stylingGrid = document.querySelector('#stylingGrid');
+        setGridData(stylingGrid, optionsCatalog.base, ['scope.read', 'scope.write']);
+
+        const stateGrid = document.querySelector('#stateGrid');
+        const debugPanel = document.querySelector('#debugPanel');
+        setGridData(stateGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        observeSelections(stateGrid, state => {
+            debugPanel.innerHTML = '';
+            const badge = document.createElement('span');
+            badge.textContent = `Selected (${state.checkedCount}): ${state.selected.join(', ') || 'none'}`;
+            debugPanel.appendChild(badge);
+        });
+
+        const validationGrid = document.querySelector('#validationGrid');
+        const validationState = document.querySelector('#validationState');
+        const validationMessage = document.querySelector('#validationMessage');
+        setGridData(validationGrid, optionsCatalog.base, []);
+
+        function validateAtLeastOne(state) {
+            if (state.checkedCount === 0) {
+                validationMessage.dataset.state = 'invalid';
+                validationMessage.textContent = 'Select at least one scope.';
+                return false;
+            }
+            validationMessage.dataset.state = 'valid';
+            validationMessage.textContent = `${state.checkedCount} scope(s) ready.`;
+            return true;
+        }
+
+        observeSelections(validationGrid, state => {
+            validationState.textContent = `${state.checkedCount} selected`;
+            validateAtLeastOne(state);
+        });
+
+        document.querySelector('#validateButton').addEventListener('click', () => {
+            validateAtLeastOne(snapshotState(validationGrid));
+        });
+    </script>
+</body>
+</html>

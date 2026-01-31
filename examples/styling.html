@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Styling – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Clash Display", "Space Grotesk", system-ui, sans-serif;
+            background: linear-gradient(135deg, #f5f3ff, #e0f2fe);
+            color: #0f172a;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+        }
+
+        nav a {
+            color: #0f172a;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .example {
+            margin: 40px 0;
+            padding: 26px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 30px 100px rgba(15, 23, 42, 0.12);
+        }
+
+        .demo {
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.65);
+        }
+
+        label.slider {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            align-items: center;
+            margin: 12px 0;
+        }
+
+        pre.code {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        button.inline {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #0f172a;
+            color: #fff;
+            margin: 4px;
+        }
+
+        .note {
+            margin-top: 12px;
+            padding: 12px;
+            border-left: 4px solid #3b82f6;
+            background: #e0f2fe;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        ck-multiselect-grid[theme="light"],
+        #tokenGrid.token-grid {
+            --card-bg: #ffffff;
+            --input-border: #cbd5f5;
+            --primary-color: #2563eb;
+            --focus-border: #38bdf8;
+            --option-pill-active-bg: #e0f2fe;
+            --text-light: #0f172a;
+        }
+
+        ck-multiselect-grid[theme="sunset"] {
+            --card-bg: #fff1eb;
+            --primary-color: #fb923c;
+            --option-pill-active-bg: #fed7aa;
+            --text-light: #7c2d12;
+        }
+
+        ck-multiselect-grid[theme="forest"] {
+            --card-bg: #052e16;
+            --primary-color: #22c55e;
+            --option-pill-active-bg: #14532d;
+            --text-light: #dcfce7;
+        }
+
+        ck-multiselect-grid[theme="dark"] {
+            --card-bg: #0f172a;
+            --primary-color: #7dd3fc;
+            --option-pill-active-bg: #1e293b;
+            --text-light: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Styling</h1>
+    <p>Manipulate CSS tokens, shadow workarounds, responsive hooks, and dark mode strategies.</p>
+
+    <div class="example" id="css-custom-properties">
+        <h3>CSS Custom Properties</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="tokenGrid" class="token-grid"></ck-multiselect-grid>
+            <div>
+                <label class="slider">Primary color <input type="color" id="primaryPicker" value="#2563eb" /></label>
+                <label class="slider">Card background <input type="color" id="cardPicker" value="#ffffff" /></label>
+                <label class="slider">Focus border <input type="color" id="focusPicker" value="#38bdf8" /></label>
+            </div>
+        </div>
+        <pre class="code"><code>ck-multiselect-grid.token-grid {
+  --primary-color: #2563eb;
+  --card-bg: #ffffff;
+  --focus-border: #38bdf8;
+}</code></pre>
+    </div>
+
+    <div class="example" id="css-parts-workarounds">
+        <h3>CSS Parts Workarounds</h3>
+        <p>No named parts exist, but you can inject styles into the open shadow root.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="partGrid"></ck-multiselect-grid>
+            <button class="inline" id="injectPartStyle">Inject shadow style</button>
+            <button class="inline" id="removePartStyle">Remove</button>
+            <p class="note">This technique is opt-in and should only be used by internal teams.</p>
+        </div>
+    </div>
+
+    <div class="example" id="theming-styling">
+        <h3>Theming Showcase</h3>
+        <div class="demo grid">
+            <ck-multiselect-grid id="themeLight" theme="light"></ck-multiselect-grid>
+            <ck-multiselect-grid id="themeSunset" theme="sunset"></ck-multiselect-grid>
+            <ck-multiselect-grid id="themeForest" theme="forest"></ck-multiselect-grid>
+        </div>
+        <pre class="code"><code>ck-multiselect-grid[theme="sunset"] {
+  --card-bg: #fff1eb;
+  --primary-color: #fb923c;
+  --option-pill-active-bg: #fed7aa;
+}
+ck-multiselect-grid[theme="forest"] {
+  --card-bg: #052e16;
+  --primary-color: #22c55e;
+  --text-light: #dcfce7;
+}</code></pre>
+    </div>
+
+    <div class="example" id="responsive-design">
+        <h3>Responsive Design</h3>
+        <p>Applies different class names to the internal fieldset via <code>fieldset-class</code>.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="responsiveGrid"></ck-multiselect-grid>
+        </div>
+        <pre class="code"><code>@media (max-width: 600px) {
+  .responsive fieldset.multiselect-fieldset {
+    padding: 0;
+  }
+}
+@media (min-width: 1024px) {
+  .responsive fieldset.multiselect-fieldset {
+    padding: 24px;
+  }
+}</code></pre>
+    </div>
+
+    <div class="example" id="dark-mode">
+        <h3>Dark Mode Toggle</h3>
+        <div class="demo">
+            <div>
+                <button class="inline" data-theme="light">Light</button>
+                <button class="inline" data-theme="dark">Dark</button>
+            </div>
+            <ck-multiselect-grid id="darkModeGrid" theme="light"></ck-multiselect-grid>
+        </div>
+        <div class="note">Buttons simply change a <code>theme</code> attribute so CSS variables update instantly.</div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData } from './shared-examples.js';
+
+        const tokenGrid = document.querySelector('#tokenGrid');
+        setGridData(tokenGrid, optionsCatalog.base.slice(0, 5));
+        const primaryPicker = document.querySelector('#primaryPicker');
+        const cardPicker = document.querySelector('#cardPicker');
+        const focusPicker = document.querySelector('#focusPicker');
+        function updateTokens() {
+            tokenGrid.style.setProperty('--primary-color', primaryPicker.value);
+            tokenGrid.style.setProperty('--card-bg', cardPicker.value);
+            tokenGrid.style.setProperty('--focus-border', focusPicker.value);
+        }
+        [primaryPicker, cardPicker, focusPicker].forEach(input => input.addEventListener('input', updateTokens));
+        updateTokens();
+
+        const partGrid = document.querySelector('#partGrid');
+        setGridData(partGrid, optionsCatalog.base.slice(0, 4));
+        let injectedSheet = null;
+        document.querySelector('#injectPartStyle').addEventListener('click', () => {
+            if (!partGrid.shadowRoot) return;
+            injectedSheet = document.createElement('style');
+            injectedSheet.textContent = '.multiselect-option { border-width: 2px; border-color: #f97316; }';
+            partGrid.shadowRoot.appendChild(injectedSheet);
+        });
+        document.querySelector('#removePartStyle').addEventListener('click', () => {
+            injectedSheet?.remove();
+            injectedSheet = null;
+        });
+
+        const themeLight = document.querySelector('#themeLight');
+        const themeSunset = document.querySelector('#themeSunset');
+        const themeForest = document.querySelector('#themeForest');
+        setGridData(themeLight, optionsCatalog.base.slice(0, 4));
+        setGridData(themeSunset, optionsCatalog.base.slice(0, 4));
+        setGridData(themeForest, optionsCatalog.base.slice(0, 4));
+
+        const responsiveGrid = document.querySelector('#responsiveGrid');
+        setGridData(responsiveGrid, optionsCatalog.base.slice(0, 6));
+        responsiveGrid.setAttribute('fieldset-class', 'responsive');
+
+        const darkModeGrid = document.querySelector('#darkModeGrid');
+        setGridData(darkModeGrid, optionsCatalog.base.slice(0, 4));
+        const themeButtons = document.querySelectorAll('#dark-mode button[data-theme]');
+        themeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                darkModeGrid.setAttribute('theme', button.dataset.theme);
+            });
+        });
+    </script>
+</body>
+</html>

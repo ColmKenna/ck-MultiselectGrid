@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Edge Cases – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Neue Montreal", "Space Grotesk", system-ui, sans-serif;
+            background: #fffef9;
+            color: #111827;
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+        }
+
+        nav a {
+            color: #111827;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .example {
+            margin: 40px 0;
+            padding: 26px;
+            border-radius: 18px;
+            border: 2px solid #f2e8c6;
+            background: #fff;
+            box-shadow: 0 25px 80px rgba(17, 24, 39, 0.08);
+        }
+
+        .demo {
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: 14px;
+            background: #fdfaf0;
+        }
+
+        pre.code {
+            background: #0f172a;
+            color: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            background: #fef9c3;
+            border-left: 4px solid #facc15;
+        }
+
+        button.inline {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #111827;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        button.inline.secondary {
+            background: transparent;
+            border: 1px solid #111827;
+            color: #111827;
+        }
+
+        ul.event-log {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            font-family: "JetBrains Mono", monospace;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        ul.event-log li {
+            padding: 4px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Edge Cases</h1>
+    <p>Stress scenarios that frequently surface bugs during integration.</p>
+
+    <div class="example" id="boundary-values">
+        <h3>Boundary Values</h3>
+        <p>Handles extremely long labels and empty strings.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="boundaryGrid"></ck-multiselect-grid>
+            <div class="note" id="boundaryNote"></div>
+        </div>
+    </div>
+
+    <div class="example" id="invalid-input">
+        <h3>Invalid Input</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="invalidGrid"></ck-multiselect-grid>
+            <button class="inline" id="injectInvalid">Inject invalid JSON</button>
+            <p class="note" id="invalidMessage">Healthy dataset.</p>
+        </div>
+    </div>
+
+    <div class="example" id="rapid-updates">
+        <h3>Rapid Updates</h3>
+        <p>Simulates churn by toggling selections every 200ms.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="rapidGrid"></ck-multiselect-grid>
+            <button class="inline" id="startRapid">Start</button>
+            <button class="inline secondary" id="stopRapid">Stop</button>
+            <p class="note" id="rapidStatus">Idle</p>
+        </div>
+    </div>
+
+    <div class="example" id="concurrent-operations">
+        <h3>Concurrent Operations</h3>
+        <p>Two overlapping async loads—only the latest response should win.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="concurrentGrid"></ck-multiselect-grid>
+            <button class="inline" id="loadSlow">Slow load</button>
+            <button class="inline" id="loadFast">Fast load</button>
+            <p class="note" id="concurrentMessage">Idle.</p>
+        </div>
+    </div>
+
+    <div class="example" id="memory-leaks">
+        <h3>Memory Leaks Prevention</h3>
+        <p>Attaches listeners, removes the component, then reattaches to show cleanup.</p>
+        <div class="demo">
+            <div id="leakContainer">
+                <ck-multiselect-grid id="leakGrid"></ck-multiselect-grid>
+            </div>
+            <div class="toolbar">
+                <button class="inline" id="removeGrid">Remove</button>
+                <button class="inline secondary" id="readdGrid">Re-add</button>
+            </div>
+            <ul class="event-log" id="leakLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="browser-compatibility">
+        <h3>Browser Compatibility</h3>
+        <p>Detects constructable stylesheet support and surfaces fallback guidance.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="compatGrid"></ck-multiselect-grid>
+            <p class="note" id="compatMessage"></p>
+        </div>
+    </div>
+
+    <div class="example" id="network-failures">
+        <h3>Network Failures</h3>
+        <p>Demonstrates exponential backoff when fetches fail.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="networkGrid"></ck-multiselect-grid>
+            <button class="inline" id="triggerFailure">Trigger failure</button>
+            <p class="note" id="networkMessage">Ready.</p>
+        </div>
+    </div>
+
+    <div class="example" id="attribute-removal">
+        <h3>Attribute Removal</h3>
+        <p>Removes <code>description</code> and falls back to <code>discription</code>.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="removalGrid"></ck-multiselect-grid>
+            <button class="inline secondary" id="removeDescription">Remove description</button>
+            <button class="inline" id="restoreDescription">Restore</button>
+        </div>
+    </div>
+
+    <div class="example" id="property-type-mismatches">
+        <h3>Property Type Mismatches</h3>
+        <p>Contrast attribute strings with property setters.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="typeGrid"></ck-multiselect-grid>
+            <button class="inline" id="setAttributeObject">setAttribute object</button>
+            <button class="inline" id="setPropertyObject">property setter</button>
+            <p class="note" id="typeMessage"></p>
+        </div>
+    </div>
+
+    <div class="example" id="state-corruption">
+        <h3>State Corruption Recovery</h3>
+        <p>Handles impossible states by rehydrating from a safe snapshot.</p>
+        <div class="demo">
+            <ck-multiselect-grid id="corruptGrid"></ck-multiselect-grid>
+            <button class="inline" id="corruptState">Corrupt state</button>
+            <button class="inline secondary" id="recoverState">Recover</button>
+            <p class="note" id="corruptMessage">Healthy.</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import { optionsCatalog, setGridData } from './shared-examples.js';
+
+        // Boundary values
+        const boundaryGrid = document.querySelector('#boundaryGrid');
+        const boundaryNote = document.querySelector('#boundaryNote');
+        const boundaryOptions = [
+            'S',
+            'This scope label is intentionally long to verify wrapping and overflow handling across multiple lines of text in the pill',
+            ''
+        ];
+        setGridData(boundaryGrid, boundaryOptions);
+        boundaryNote.textContent = 'Empty strings are discarded; pills wrap gracefully.';
+
+        // Invalid input
+        const invalidGrid = document.querySelector('#invalidGrid');
+        const injectInvalid = document.querySelector('#injectInvalid');
+        const invalidMessage = document.querySelector('#invalidMessage');
+        setGridData(invalidGrid, optionsCatalog.base.slice(0, 3));
+        injectInvalid.addEventListener('click', () => {
+            invalidGrid.setAttribute('availableItems', '{bad json}');
+            invalidMessage.textContent = 'Check console warning. Dataset cleared until valid JSON is supplied.';
+        });
+
+        // Rapid updates
+        const rapidGrid = document.querySelector('#rapidGrid');
+        const startRapid = document.querySelector('#startRapid');
+        const stopRapid = document.querySelector('#stopRapid');
+        const rapidStatus = document.querySelector('#rapidStatus');
+        setGridData(rapidGrid, optionsCatalog.base.slice(0, 4));
+        let rapidInterval = null;
+        startRapid.addEventListener('click', () => {
+            if (rapidInterval) return;
+            rapidStatus.textContent = 'Running…';
+            rapidInterval = setInterval(() => {
+                const selected = optionsCatalog.base.filter(() => Math.random() > 0.5).map(option => option.value);
+                rapidGrid.setAttribute('selectedItems', JSON.stringify(selected));
+            }, 200);
+        });
+        stopRapid.addEventListener('click', () => {
+            clearInterval(rapidInterval);
+            rapidInterval = null;
+            rapidStatus.textContent = 'Idle';
+        });
+
+        // Concurrent operations
+        const concurrentGrid = document.querySelector('#concurrentGrid');
+        const loadSlow = document.querySelector('#loadSlow');
+        const loadFast = document.querySelector('#loadFast');
+        const concurrentMessage = document.querySelector('#concurrentMessage');
+        let token = 0;
+        function scheduleLoad(delay, label) {
+            const current = ++token;
+            concurrentMessage.textContent = `${label} request dispatched`;
+            setTimeout(() => {
+                if (current !== token) return;
+                setGridData(concurrentGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+                concurrentMessage.textContent = `${label} response applied`;
+            }, delay);
+        }
+        loadSlow.addEventListener('click', () => scheduleLoad(1200, 'Slow'));
+        loadFast.addEventListener('click', () => scheduleLoad(400, 'Fast'));
+
+        // Memory leaks
+        const leakContainer = document.querySelector('#leakContainer');
+        const leakLog = document.querySelector('#leakLog');
+        const leakGrid = document.querySelector('#leakGrid');
+        const removeGridBtn = document.querySelector('#removeGrid');
+        const readdGridBtn = document.querySelector('#readdGrid');
+        setGridData(leakGrid, optionsCatalog.base.slice(0, 4));
+        const logLeak = message => {
+            const row = document.createElement('li');
+            row.textContent = message;
+            leakLog.prepend(row);
+        };
+        leakGrid.addEventListener('ck-multiselect-option-selected', () => logLeak('selection fired (attached)'));
+        removeGridBtn.addEventListener('click', () => {
+            if (!leakContainer.contains(leakGrid)) return;
+            leakGrid.remove();
+            logLeak('component removed – listeners freed with element');
+        });
+        readdGridBtn.addEventListener('click', () => {
+            if (leakContainer.contains(leakGrid)) return;
+            leakContainer.appendChild(leakGrid);
+            logLeak('component re-added.');
+        });
+
+        // Browser compatibility
+        const compatGrid = document.querySelector('#compatGrid');
+        const compatMessage = document.querySelector('#compatMessage');
+        setGridData(compatGrid, optionsCatalog.base.slice(0, 3));
+        const supportsConstructable = Boolean(window.CSSStyleSheet && 'replaceSync' in CSSStyleSheet.prototype);
+        compatMessage.textContent = supportsConstructable ? 'Constructable stylesheet applied.' : 'Fallback <style> injected. Consider ponyfill for legacy browsers.';
+
+        // Network failures
+        const networkGrid = document.querySelector('#networkGrid');
+        const triggerFailure = document.querySelector('#triggerFailure');
+        const networkMessage = document.querySelector('#networkMessage');
+        setGridData(networkGrid, optionsCatalog.base.slice(0, 3));
+        triggerFailure.addEventListener('click', () => {
+            let attempt = 0;
+            function run() {
+                attempt += 1;
+                const delay = Math.min(1500, 200 * 2 ** attempt);
+                networkMessage.textContent = `Attempt ${attempt} – retrying in ${delay}ms`;
+                setTimeout(() => {
+                    if (attempt < 3) {
+                        run();
+                        return;
+                    }
+                    setGridData(networkGrid, optionsCatalog.base.slice(0, 3));
+                    networkMessage.textContent = 'Recovered after backoff.';
+                }, delay);
+            }
+            run();
+        });
+
+        // Attribute removal
+        const removalGrid = document.querySelector('#removalGrid');
+        const removeDescription = document.querySelector('#removeDescription');
+        const restoreDescription = document.querySelector('#restoreDescription');
+        removalGrid.description = 'Primary description text.';
+        removalGrid.discription = 'Legacy fallback text.';
+        setGridData(removalGrid, optionsCatalog.base.slice(0, 4));
+        removeDescription.addEventListener('click', () => {
+            removalGrid.removeAttribute('description');
+        });
+        restoreDescription.addEventListener('click', () => {
+            removalGrid.description = 'Primary description text.';
+        });
+
+        // Property type mismatches
+        const typeGrid = document.querySelector('#typeGrid');
+        const typeMessage = document.querySelector('#typeMessage');
+        const setAttributeObject = document.querySelector('#setAttributeObject');
+        const setPropertyObject = document.querySelector('#setPropertyObject');
+        setGridData(typeGrid, optionsCatalog.base.slice(0, 3));
+        setAttributeObject.addEventListener('click', () => {
+            typeGrid.setAttribute('title', JSON.stringify({ text: 'wrong' }));
+            typeMessage.textContent = 'setAttribute coerces to string. You will literally see "{\"text\":\"wrong\"}".';
+        });
+        setPropertyObject.addEventListener('click', () => {
+            typeGrid.title = 'Title via property setter';
+            typeMessage.textContent = 'Property setter expects a string and reflects it safely.';
+        });
+
+        // State corruption
+        const corruptGrid = document.querySelector('#corruptGrid');
+        const corruptStateBtn = document.querySelector('#corruptState');
+        const recoverStateBtn = document.querySelector('#recoverState');
+        const corruptMessage = document.querySelector('#corruptMessage');
+        setGridData(corruptGrid, optionsCatalog.base.slice(0, 4));
+        const safeSnapshot = ['scope.read'];
+        corruptStateBtn.addEventListener('click', () => {
+            corruptGrid.setAttribute('selectedItems', '{bad}');
+            corruptMessage.textContent = 'Corrupted JSON – component cleared selections.';
+        });
+        recoverStateBtn.addEventListener('click', () => {
+            corruptGrid.setAttribute('selectedItems', JSON.stringify(safeSnapshot));
+            corruptMessage.textContent = 'Recovered from snapshot.';
+        });
+    </script>
+</body>
+</html>

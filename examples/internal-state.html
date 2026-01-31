@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Internal State & Debugging – ck-multiselect-grid</title>
+    <style>
+        body {
+            font-family: "Whyte", "Space Grotesk", system-ui, sans-serif;
+            background: #f5f7fb;
+            color: #0f172a;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 40px 24px 140px;
+        }
+
+        nav a {
+            color: #0f172a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .example {
+            margin: 40px 0;
+            padding: 28px;
+            border-radius: 18px;
+            border: 2px solid #e2e8f0;
+            background: #fff;
+            box-shadow: 0 30px 90px rgba(15, 23, 42, 0.08);
+        }
+
+        .demo {
+            margin-top: 14px;
+            padding: 18px;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        pre.code,
+        pre.json-view {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        ul.event-log {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+            max-height: 180px;
+            overflow-y: auto;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.95rem;
+        }
+
+        ul.event-log li {
+            padding: 4px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        button.inline {
+            border: none;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #2563eb;
+            color: #fff;
+            margin-right: 8px;
+        }
+
+        button.inline.secondary {
+            background: transparent;
+            border: 1px solid #2563eb;
+            color: #2563eb;
+        }
+
+        .status-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .status-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            font-family: "JetBrains Mono", monospace;
+        }
+
+        .note {
+            margin-top: 12px;
+            padding: 12px;
+            border-left: 4px solid #38bdf8;
+            background: #e0f2fe;
+        }
+    </style>
+</head>
+<body>
+    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <h1>Internal State & Debugging</h1>
+    <p>Inspect every signal the component emits by peeking into the open shadow root, logging events, and instrumenting performance.</p>
+
+    <div class="example" id="state-inspector">
+        <h3>State Inspector</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="inspectorGrid"></ck-multiselect-grid>
+            <pre class="json-view" id="stateJson">{}</pre>
+            <button class="inline" id="refreshState">Refresh snapshot</button>
+        </div>
+    </div>
+
+    <div class="example" id="validation-tracking">
+        <h3>Validation State Tracking</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="validationGrid"></ck-multiselect-grid>
+            <div class="status-board">
+                <div class="status-card">Dirty: <span id="valDirty">false</span></div>
+                <div class="status-card">Touched: <span id="valTouched">false</span></div>
+                <div class="status-card">Valid: <span id="valValid">false</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="example" id="event-visualization">
+        <h3>Event Visualization</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="eventVizGrid"></ck-multiselect-grid>
+            <ul class="event-log" id="eventVizLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="method-side-effects-debug">
+        <h3>Method Call Side Effects</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="sideEffectGrid"></ck-multiselect-grid>
+            <div class="toolbar">
+                <button class="inline" id="sideEffectSelect">Select first two</button>
+                <button class="inline secondary" id="sideEffectClear">Clear</button>
+            </div>
+            <pre class="json-view" id="sideEffectBefore">before</pre>
+            <pre class="json-view" id="sideEffectAfter">after</pre>
+        </div>
+    </div>
+
+    <div class="example" id="property-change-tracking">
+        <h3>Property Change Tracking</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="propertyGrid"></ck-multiselect-grid>
+            <button class="inline" id="updateTitle">Update title</button>
+            <button class="inline secondary" id="updateDescription">Update description</button>
+            <ul class="event-log" id="propertyLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="lifecycle-visualization">
+        <h3>Lifecycle Hooks</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="lifecycleGrid"></ck-multiselect-grid>
+            <ul class="event-log" id="lifecycleLog"></ul>
+        </div>
+    </div>
+
+    <div class="example" id="performance-monitoring">
+        <h3>Performance Monitoring</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="perfGrid"></ck-multiselect-grid>
+            <button class="inline" id="measureRender">Render 32 options</button>
+            <p class="note" id="perfNote">Click to measure render cost.</p>
+        </div>
+    </div>
+
+    <div class="example" id="error-state-inspection">
+        <h3>Error State Inspection</h3>
+        <div class="demo">
+            <ck-multiselect-grid id="errorInspectorGrid"></ck-multiselect-grid>
+            <button class="inline" id="causeError">Cause JSON error</button>
+            <button class="inline secondary" id="clearInspector">Clear</button>
+            <pre class="json-view" id="errorInspectorLog">[]</pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+        import {
+            optionsCatalog,
+            setGridData,
+            snapshotState,
+            observeSelections,
+            logEvents,
+            markDirtyOnInteraction,
+            attachLifecycleDebug
+        } from './shared-examples.js';
+
+        // State inspector
+        const inspectorGrid = document.querySelector('#inspectorGrid');
+        const stateJson = document.querySelector('#stateJson');
+        const refreshState = document.querySelector('#refreshState');
+        setGridData(inspectorGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        function renderState() {
+            stateJson.textContent = JSON.stringify(snapshotState(inspectorGrid), null, 2);
+        }
+        refreshState.addEventListener('click', renderState);
+        observeSelections(inspectorGrid, renderState);
+        renderState();
+
+        // Validation tracking
+        const validationGridEl = document.querySelector('#validationGrid');
+        const valDirty = document.querySelector('#valDirty');
+        const valTouched = document.querySelector('#valTouched');
+        const valValid = document.querySelector('#valValid');
+        setGridData(validationGridEl, optionsCatalog.base.slice(0, 5));
+        markDirtyOnInteraction(validationGridEl, valDirty);
+        let touched = false;
+        observeSelections(validationGridEl, state => {
+            touched = true;
+            valTouched.textContent = 'true';
+            valValid.textContent = state.checkedCount > 0;
+        });
+        valTouched.textContent = touched;
+        valValid.textContent = 'false';
+
+        // Event visualization
+        const eventVizGrid = document.querySelector('#eventVizGrid');
+        const eventVizLog = document.querySelector('#eventVizLog');
+        setGridData(eventVizGrid, optionsCatalog.base.slice(0, 4));
+        logEvents(eventVizGrid, eventVizLog);
+
+        // Method side effects
+        const sideEffectGrid = document.querySelector('#sideEffectGrid');
+        const sideEffectSelect = document.querySelector('#sideEffectSelect');
+        const sideEffectClear = document.querySelector('#sideEffectClear');
+        const sideEffectBefore = document.querySelector('#sideEffectBefore');
+        const sideEffectAfter = document.querySelector('#sideEffectAfter');
+        setGridData(sideEffectGrid, optionsCatalog.base.slice(0, 5));
+        function capture(label, target) {
+            target.textContent = `${label}: ${JSON.stringify(snapshotState(sideEffectGrid), null, 2)}`;
+        }
+        sideEffectSelect.addEventListener('click', () => {
+            capture('Before', sideEffectBefore);
+            sideEffectGrid.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.write']));
+            capture('After', sideEffectAfter);
+        });
+        sideEffectClear.addEventListener('click', () => {
+            capture('Before', sideEffectBefore);
+            sideEffectGrid.setAttribute('selectedItems', JSON.stringify([]));
+            capture('After', sideEffectAfter);
+        });
+
+        // Property change tracking
+        const propertyGrid = document.querySelector('#propertyGrid');
+        const propertyLog = document.querySelector('#propertyLog');
+        const updateTitle = document.querySelector('#updateTitle');
+        const updateDescription = document.querySelector('#updateDescription');
+        setGridData(propertyGrid, optionsCatalog.base.slice(0, 4));
+        const mutationObserver = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                const item = document.createElement('li');
+                item.textContent = `${mutation.attributeName} → ${propertyGrid.getAttribute(mutation.attributeName)}`;
+                propertyLog.prepend(item);
+            });
+        });
+        mutationObserver.observe(propertyGrid, { attributes: true });
+        updateTitle.addEventListener('click', () => {
+            propertyGrid.title = `Title @ ${new Date().toLocaleTimeString()}`;
+        });
+        updateDescription.addEventListener('click', () => {
+            propertyGrid.description = `Updated ${Date.now()}`;
+        });
+
+        // Lifecycle visualization
+        const lifecycleGrid = document.querySelector('#lifecycleGrid');
+        const lifecycleLog = document.querySelector('#lifecycleLog');
+        setGridData(lifecycleGrid, optionsCatalog.base.slice(0, 3));
+        attachLifecycleDebug(lifecycleGrid, lifecycleLog);
+
+        // Performance monitoring
+        const perfGrid = document.querySelector('#perfGrid');
+        const measureRender = document.querySelector('#measureRender');
+        const perfNote = document.querySelector('#perfNote');
+        setGridData(perfGrid, optionsCatalog.base.slice(0, 6));
+        measureRender.addEventListener('click', () => {
+            const start = performance.now();
+            setGridData(perfGrid, optionsCatalog.medium.slice(0, 32));
+            requestAnimationFrame(() => {
+                const duration = (performance.now() - start).toFixed(2);
+                perfNote.textContent = `Rendered 32 options in ${duration}ms`;
+            });
+        });
+
+        // Error inspection
+        const errorInspectorGrid = document.querySelector('#errorInspectorGrid');
+        const causeError = document.querySelector('#causeError');
+        const clearInspector = document.querySelector('#clearInspector');
+        const errorInspectorLog = document.querySelector('#errorInspectorLog');
+        setGridData(errorInspectorGrid, optionsCatalog.base.slice(0, 4));
+        const errors = [];
+        causeError.addEventListener('click', () => {
+            try {
+                errorInspectorGrid.setAttribute('availableItems', '{bad json');
+            } catch (error) {
+                errors.push({ time: Date.now(), message: error.message });
+            }
+            errors.push({ time: Date.now(), message: 'Parse attempt triggered (see console)' });
+            errorInspectorLog.textContent = JSON.stringify(errors, null, 2);
+        });
+        clearInspector.addEventListener('click', () => {
+            errors.length = 0;
+            errorInspectorLog.textContent = '[]';
+            setGridData(errorInspectorGrid, optionsCatalog.base.slice(0, 4));
+        });
+    </script>
+</body>
+</html>

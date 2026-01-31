@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ck-multiselect-grid – Documentation</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: "Segoe UI", "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+            padding: 1rem 1.5rem;
+            z-index: 10;
+        }
+
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            gap: 1rem;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav a {
+            color: #7dd3fc;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        nav a:hover,
+        nav a:focus-visible {
+            color: #fbbf24;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            margin-top: 0;
+        }
+
+        section {
+            margin-top: 3rem;
+            padding: 2rem;
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            box-shadow: 0 35px 120px rgba(15, 23, 42, 0.55);
+        }
+
+        section h2 {
+            margin-top: 0;
+            font-size: 1.75rem;
+        }
+
+        h3 code,
+        h4 code,
+        td code,
+        li code {
+            font-family: "JetBrains Mono", "Fira Code", Consolas, "SFMono-Regular", ui-monospace, monospace;
+            background: rgba(15, 23, 42, 0.85);
+            padding: 0.125rem 0.4rem;
+            border-radius: 4px;
+            color: #fbbf24;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+
+        table th,
+        table td {
+            border: 1px solid rgba(148, 163, 184, 0.4);
+            padding: 0.75rem 0.9rem;
+            text-align: left;
+        }
+
+        table th {
+            background: rgba(15, 23, 42, 0.85);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+        }
+
+        pre {
+            background: #020617;
+            color: #e2e8f0;
+            padding: 1rem;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        code {
+            font-family: "JetBrains Mono", "Fira Code", Consolas, "SFMono-Regular", ui-monospace, monospace;
+        }
+
+        ul {
+            padding-left: 1.25rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .callout {
+            background: rgba(8, 47, 73, 0.65);
+            padding: 1.25rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(125, 211, 252, 0.4);
+            color: #e0f2fe;
+        }
+
+        .warning {
+            border-color: rgba(248, 113, 113, 0.65);
+            background: rgba(127, 29, 29, 0.55);
+            color: #fee2e2;
+        }
+
+        a {
+            color: #38bdf8;
+        }
+
+        a:hover,
+        a:focus-visible {
+            color: #fbbf24;
+        }
+
+        @media (max-width: 768px) {
+            section {
+                padding: 1.5rem;
+                border-radius: 18px;
+            }
+
+            nav ul {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#attributes">Attributes</a></li>
+            <li><a href="#css-properties">CSS Properties</a></li>
+            <li><a href="#css-parts">CSS Parts</a></li>
+            <li><a href="#themes">Themes</a></li>
+            <li><a href="#methods">Methods</a></li>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#examples">Examples</a></li>
+            <li><a href="#faq">FAQ</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>ck-multiselect-grid</h1>
+        <section id="overview">
+            <h2>Overview</h2>
+            <p><code>&lt;ck-multiselect-grid&gt;</code> renders a responsive, accessible grid of checkbox “pills” backed by JSON-driven data. It automates ID management, synthesizes persisted selections that are missing from live data, and emits high-fidelity selection events for analytics or persistence layers.</p>
+            <div class="grid grid-2">
+                <div>
+                    <h3>Highlights</h3>
+                    <ul>
+                        <li>Shadow DOM encapsulation with open <code>shadowRoot</code> for debugging.</li>
+                        <li>Constructable stylesheet adoption with automatic fallback injection.</li>
+                        <li>Event-rich UX: every toggle dispatches actionable detail payloads.</li>
+                        <li>Data healing: selections not present in <code>availableItems</code> are synthesized to preserve state.</li>
+                        <li>Design-token ready: all visual primitives rely on CSS custom properties.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Ideal Use Cases</h3>
+                    <ul>
+                        <li>Scope selection for OAuth / OpenID clients.</li>
+                        <li>Multi-permission toggles in admin consoles.</li>
+                        <li>Tag pickers that need pill styling with checkbox semantics.</li>
+                        <li>Persisted selections that must survive data drift.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="callout">
+                <strong>Tip:</strong> Run <code>npm run build</code> before opening the example gallery so <code>dist/ck-multiselect-grid/ck-multiselect-grid.esm.js</code> is available to browsers.
+            </div>
+        </section>
+
+        <section id="installation">
+            <h2>Installation &amp; Usage</h2>
+            <h3>Install from GitHub Packages</h3>
+            <pre><code># .npmrc
+@colmkenna:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+
+# project
+npm install @colmkenna/ck-webcomponents</code></pre>
+            <h3>Bundle Usage</h3>
+            <pre><code>import '@colmkenna/ck-webcomponents';
+// or tree-shake
+import { CkMultiselectGrid } from '@colmkenna/ck-webcomponents';</code></pre>
+            <h3>CDN / Static HTML</h3>
+            <pre><code>&lt;script type="module" src="https://unpkg.com/@colmkenna/ck-webcomponents@latest/dist/ck-multiselect-grid/ck-multiselect-grid.esm.js"&gt;&lt;/script&gt;
+&lt;ck-multiselect-grid&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+            <p>Within this repository’s docs, each example page imports the ES module directly: <code>../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js</code>.</p>
+        </section>
+
+        <section id="attributes">
+            <h2>Attributes &amp; Reflected Properties</h2>
+            <p>The component observes seven attributes. String attributes reflect as JS getters/setters. Data attributes (<code>availableItems</code>, <code>selectedItems</code>) are JSON strings and should be mutated via <code>setAttribute</code> or helper utilities to avoid serialization mismatches.</p>
+
+            <h3><code>title</code></h3>
+            <table>
+                <tr><th>Property</th><td>title</td></tr>
+                <tr><th>Type</th><td>string</td></tr>
+                <tr><th>Default</th><td>"Select Resource Scopes"</td></tr>
+                <tr><th>Valid Values</th><td>Any non-empty string; empty values collapse the label region</td></tr>
+            </table>
+            <p><strong>Description:</strong> Controls the accessible heading label announcing the purpose of the checkbox group. Updating the property instantly re-renders the label inside the shadow DOM and updates the <code>aria-labelledby</code> reference used by the checkbox grid.</p>
+            <p><strong>Examples:</strong> <a href="examples/basic-usage.html#minimal-setup">Minimal Setup</a>, <a href="examples/basic-usage.html#common-attributes">Common Attributes</a></p>
+
+            <h3><code>description</code></h3>
+            <table>
+                <tr><th>Property</th><td>description</td></tr>
+                <tr><th>Type</th><td>string | null</td></tr>
+                <tr><th>Default</th><td>"Choose which resource scopes this client is allowed to request."</td></tr>
+                <tr><th>Valid Values</th><td>Any string, typically one or two sentences of helper copy</td></tr>
+            </table>
+            <p><strong>Description:</strong> Helper text rendered below the heading. When absent, the component falls back to the default copy or the legacy <code>discription</code> attribute. Keep this concise and actionable to maintain layout density.</p>
+            <p><strong>Examples:</strong> <a href="examples/basic-usage.html#default-styling">Default Styling</a>, <a href="examples/advanced-usage.html#all-attributes">All Attributes Combined</a></p>
+
+            <h3><code>discription</code></h3>
+            <table>
+                <tr><th>Property</th><td>discription</td></tr>
+                <tr><th>Type</th><td>string | null</td></tr>
+                <tr><th>Default</th><td>"Choose which resource scopes this client is allowed to request."</td></tr>
+                <tr><th>Valid Values</th><td>Legacy spelling; same constraints as <code>description</code></td></tr>
+            </table>
+            <p><strong>Description:</strong> Backwards-compatible alias kept for existing markup. If both <code>description</code> and <code>discription</code> are present, <code>description</code> wins. Prefer migrating to the correctly spelled attribute.</p>
+            <p><strong>Examples:</strong> <a href="examples/edge-cases.html#attribute-removal">Attribute Removal</a></p>
+
+            <h3><code>fieldset-id</code></h3>
+            <table>
+                <tr><th>Property</th><td>– (attribute only)</td></tr>
+                <tr><th>Type</th><td>string</td></tr>
+                <tr><th>Default</th><td>"scopes-fieldset"</td></tr>
+                <tr><th>Valid Values</th><td>Any valid HTML id token</td></tr>
+            </table>
+            <p><strong>Description:</strong> Sets the id on the internal <code>&lt;fieldset&gt;</code> wrapper. Use this to wire analytics, automated tests, or document fragments that need predictable anchors.</p>
+            <p><strong>Examples:</strong> <a href="examples/advanced-usage.html#all-attributes">All Attributes Combined</a>, <a href="examples/form-integration.html#basic-form">Form Basics</a></p>
+
+            <h3><code>fieldset-class</code></h3>
+            <table>
+                <tr><th>Property</th><td>– (attribute only)</td></tr>
+                <tr><th>Type</th><td>space-delimited string</td></tr>
+                <tr><th>Default</th><td>"multiselect-fieldset"</td></tr>
+                <tr><th>Valid Values</th><td>Any whitespace-separated class tokens</td></tr>
+            </table>
+            <p><strong>Description:</strong> Appends custom class tokens to the base <code>multiselect-fieldset</code> class. Useful for global styling hooks or automated testing. Tokens are deduplicated and trimmed.</p>
+            <p><strong>Examples:</strong> <a href="examples/styling.html#responsive-design">Responsive Design</a></p>
+
+            <h3><code>availableItems</code></h3>
+            <table>
+                <tr><th>Property</th><td>– (mutate via <code>setAttribute</code>)</td></tr>
+                <tr><th>Type</th><td>JSON array of strings or objects</td></tr>
+                <tr><th>Default</th><td><code>[]</code></td></tr>
+                <tr><th>Valid Values</th><td>Strings or objects with optional <code>id</code>, <code>label</code>, <code>name</code>, <code>value</code></td></tr>
+            </table>
+            <p><strong>Description:</strong> Drives the rendered checkbox inventory. Strings are normalized into {id/label/name/value} bundles, while objects let you specify each field explicitly. Invalid JSON logs a warning and results in an empty grid.</p>
+            <p><strong>Examples:</strong> <a href="examples/basic-usage.html#common-attributes">Common Attributes</a>, <a href="examples/advanced-usage.html#complex-data">Complex Data</a>, <a href="examples/data-states.html#partial-data">Partial Data</a></p>
+
+            <h3><code>selectedItems</code></h3>
+            <table>
+                <tr><th>Property</th><td>– (mutate via <code>setAttribute</code>)</td></tr>
+                <tr><th>Type</th><td>JSON array of strings</td></tr>
+                <tr><th>Default</th><td><code>[]</code></td></tr>
+                <tr><th>Valid Values</th><td>Strings matching <code>value</code> entries from <code>availableItems</code></td></tr>
+            </table>
+            <p><strong>Description:</strong> Declares which options should render as checked. Values missing from <code>availableItems</code> are synthesized so persisted selections remain visible, protecting against API drift.</p>
+            <p><strong>Examples:</strong> <a href="examples/basic-usage.html#validation-basics">Validation Basics</a>, <a href="examples/advanced-usage.html#programmatic-state">Programmatic State Manipulation</a>, <a href="examples/internal-state.html#property-change-tracking">Property Change Tracking</a></p>
+        </section>
+
+        <section id="css-properties">
+            <h2>CSS Custom Properties</h2>
+            <p>The component’s stylesheet relies entirely on semantic tokens. Declare them globally, on a wrapper, or per-instance. The defaults below match the design tokens used throughout the demos.</p>
+
+            <h3><code>--input-border</code></h3>
+            <table>
+                <tr><th>Default</th><td>#cbd5f5</td></tr>
+                <tr><th>Valid Values</th><td>Any CSS color, gradient, or border-color token</td></tr>
+            </table>
+            <p><strong>Description:</strong> Border color applied to checkboxes and option cards in their resting state.</p>
+            <p><strong>Usage Example:</strong></p>
+<pre><code>ck-multiselect-grid {
+    --input-border: #94a3b8;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/styling.html#css-custom-properties">CSS custom property tour</a></p>
+
+            <h3><code>--primary-color</code></h3>
+            <table>
+                <tr><th>Default</th><td>#3b82f6</td></tr>
+                <tr><th>Valid Values</th><td>Any CSS color</td></tr>
+            </table>
+            <p><strong>Description:</strong> Drives the active checkbox fill, focused borders, and selected option highlight.</p>
+<pre><code>ck-multiselect-grid[theme="sunset"] {
+    --primary-color: #f97316;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/themes.html#complete-themes">Theme gallery</a></p>
+
+            <h3><code>--surface-bg</code></h3>
+            <table>
+                <tr><th>Default</th><td>#0f172a</td></tr>
+                <tr><th>Valid Values</th><td>Any background color</td></tr>
+            </table>
+            <p><strong>Description:</strong> Hover background for each option tile, keeping interaction states consistent.</p>
+            <p><strong>Usage Example:</strong></p>
+<pre><code>ck-multiselect-grid.compact {
+    --surface-bg: #e0f2fe;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/styling.html#responsive-design">Responsive styling demo</a></p>
+
+            <h3><code>--focus-border</code></h3>
+            <table>
+                <tr><th>Default</th><td>#38bdf8</td></tr>
+                <tr><th>Valid Values</th><td>Color tokens supporting accessible focus contrast</td></tr>
+            </table>
+            <p><strong>Description:</strong> Outline color used when inputs receive focus, ensuring WCAG-compliant focus visibility.</p>
+<pre><code>ck-multiselect-grid[theme="high-contrast"] {
+    --focus-border: #facc15;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/themes.html#high-contrast-theme">High contrast theme</a></p>
+
+            <h3><code>--option-pill-active-bg</code></h3>
+            <table>
+                <tr><th>Default</th><td>#1e293b</td></tr>
+                <tr><th>Valid Values</th><td>Background color values</td></tr>
+            </table>
+            <p><strong>Description:</strong> Background applied to an option card when its checkbox is checked.</p>
+<pre><code>ck-multiselect-grid.success {
+    --option-pill-active-bg: #14532d;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/data-states.html#success-state">Success state</a></p>
+
+            <h3><code>--text-light</code></h3>
+            <table>
+                <tr><th>Default</th><td>#f8fafc</td></tr>
+                <tr><th>Valid Values</th><td>Readable text colors</td></tr>
+            </table>
+            <p><strong>Description:</strong> Text color used when an option is selected; ensure sufficient contrast vs. <code>--option-pill-active-bg</code>.</p>
+<pre><code>ck-multiselect-grid[theme="dark"] {
+    --text-light: #f5f5f4;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/themes.html#dark-theme">Dark mode gallery</a></p>
+
+            <h3><code>--card-bg</code></h3>
+            <table>
+                <tr><th>Default</th><td>#0f172a</td></tr>
+                <tr><th>Valid Values</th><td>Any background color or gradient</td></tr>
+            </table>
+            <p><strong>Description:</strong> Base background for each option container, impacting both idle and disabled states.</p>
+<pre><code>ck-multiselect-grid[minimal] {
+    --card-bg: #ffffff;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/basic-usage.html#default-styling">Default styling</a></p>
+
+            <h3><code>--form-bg</code></h3>
+            <table>
+                <tr><th>Default</th><td>#e2e8f0</td></tr>
+                <tr><th>Valid Values</th><td>Background color for disabled checkboxes</td></tr>
+            </table>
+            <p><strong>Description:</strong> Used when inputs are disabled so the state difference remains visible.</p>
+<pre><code>ck-multiselect-grid[disabled] {
+    --form-bg: #cbd5f5;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/data-states.html#disabled-state">Disabled data state</a></p>
+
+            <h3><code>--focus-shadow</code></h3>
+            <table>
+                <tr><th>Default</th><td>0 0 0 3px rgba(56, 189, 248, 0.35)</td></tr>
+                <tr><th>Valid Values</th><td>Any CSS box-shadow value</td></tr>
+            </table>
+            <p><strong>Description:</strong> Drop shadow applied on focused checkboxes to increase prominence on dense grids.</p>
+<pre><code>ck-multiselect-grid.cozy {
+    --focus-shadow: 0 0 0 4px rgba(14, 165, 233, 0.45);
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/internal-state.html#validation-tracking">Validation tracking</a></p>
+
+            <h3><code>--option-pill-color</code></h3>
+            <table>
+                <tr><th>Default</th><td>#0f172a</td></tr>
+                <tr><th>Valid Values</th><td>Any text color</td></tr>
+            </table>
+            <p><strong>Description:</strong> Text color used for pill labels in the non-selected state.</p>
+<pre><code>ck-multiselect-grid[theme="forest"] {
+    --option-pill-color: #052e16;
+}</code></pre>
+            <p><strong>Visual Example:</strong> <a href="examples/themes.html#real-world-themes">Real-world theme samples</a></p>
+        </section>
+
+        <section id="css-parts">
+            <h2>CSS Parts</h2>
+            <p>The current version does not expose named <code>part</code> hooks. Styling is achieved via custom properties and wrapper selectors. If you need granular hooks, extend the component by forking <code>ck-multiselect-grid.ts</code> and add <code>part</code> attributes to the relevant nodes.</p>
+            <div class="callout warning">
+                <strong>Workaround:</strong> Because the shadow root is open, advanced users may inject a stylesheet via <code>grid.shadowRoot.adoptedStyleSheets</code>. This shouldn’t be relied upon in shared libraries but is noted for completeness.
+            </div>
+        </section>
+
+        <section id="themes">
+            <h2>Themes</h2>
+            <h3>Overview</h3>
+            <p>ck-multiselect-grid does not ship with opinionated themes, but the CSS token surface makes theme authoring straightforward. All demos adopt the convention of applying a <code>theme</code> attribute on the host and scoping CSS variables accordingly.</p>
+
+            <h3>Built-in Theme Recipes</h3>
+            <h4>Light Theme (Default)</h4>
+            <p>Balanced neutrals suited for standard dashboards.</p>
+<pre><code>&lt;ck-multiselect-grid theme="light"&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+            <p><strong>Preview:</strong> <a href="examples/themes.html#light-theme">Theme gallery</a></p>
+
+            <h4>Dark Theme</h4>
+            <p>High-contrast blues and teals tuned for dim environments.</p>
+<pre><code>&lt;ck-multiselect-grid theme="dark"&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+            <p><strong>Preview:</strong> <a href="examples/themes.html#dark-theme">Theme gallery</a></p>
+
+            <h4>High Contrast Theme</h4>
+            <p>Signal-focused palette optimized for WCAG AAA text ratios.</p>
+<pre><code>&lt;ck-multiselect-grid theme="high-contrast"&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+            <p><strong>Preview:</strong> <a href="examples/themes.html#high-contrast-theme">High contrast walkthrough</a></p>
+
+            <h3>Theme Variables Reference</h3>
+            <table>
+                <tr>
+                    <th>Variable</th>
+                    <th>Light</th>
+                    <th>Dark</th>
+                    <th>High Contrast</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>--card-bg</code></td>
+                    <td>#ffffff</td>
+                    <td>#0f172a</td>
+                    <td>#000000</td>
+                    <td>Option tile background</td>
+                </tr>
+                <tr>
+                    <td><code>--input-border</code></td>
+                    <td>#cbd5f5</td>
+                    <td>#475569</td>
+                    <td>#f8fafc</td>
+                    <td>Checkbox and card borders</td>
+                </tr>
+                <tr>
+                    <td><code>--primary-color</code></td>
+                    <td>#2563eb</td>
+                    <td>#38bdf8</td>
+                    <td>#facc15</td>
+                    <td>Selection + focus emphasis</td>
+                </tr>
+                <tr>
+                    <td><code>--surface-bg</code></td>
+                    <td>#f8fafc</td>
+                    <td>#1e293b</td>
+                    <td>#0f172a</td>
+                    <td>Hover state background</td>
+                </tr>
+                <tr>
+                    <td><code>--text-light</code></td>
+                    <td>#0f172a</td>
+                    <td>#f8fafc</td>
+                    <td>#000000</td>
+                    <td>Selected label text</td>
+                </tr>
+                <tr>
+                    <td><code>--focus-border</code></td>
+                    <td>#38bdf8</td>
+                    <td>#fbbf24</td>
+                    <td>#22c55e</td>
+                    <td>Focus outlines + box-shadow token</td>
+                </tr>
+            </table>
+
+            <h3>Creating Custom Themes</h3>
+            <h4>Method 1: CSS Classes</h4>
+<pre><code>ck-multiselect-grid.ocean {
+    --card-bg: #e0f2fe;
+    --primary-color: #0284c7;
+    --option-pill-active-bg: #0369a1;
+    --text-light: #f0f9ff;
+}</code></pre>
+
+            <h4>Method 2: Theme Attribute</h4>
+<pre><code>ck-multiselect-grid[theme="sunset"] {
+    --card-bg: #fff7ed;
+    --primary-color: #fb923c;
+    --option-pill-active-bg: #fdba74;
+}</code></pre>
+
+            <h4>Method 3: Inline Override</h4>
+<pre><code>&lt;ck-multiselect-grid style="--primary-color:#dc2626; --card-bg:#fff1f2"&gt;&lt;/ck-multiselect-grid&gt;</code></pre>
+
+            <h3>Dynamic Theme Switching</h3>
+            <h4>Using the <code>theme</code> Attribute</h4>
+<pre><code>function switchTheme(theme) {
+    document.querySelectorAll('ck-multiselect-grid').forEach(grid => {
+        grid.setAttribute('theme', theme);
+    });
+}</code></pre>
+
+            <h4>System Theme Detection</h4>
+<pre><code>const media = window.matchMedia('(prefers-color-scheme: dark)');
+const sync = () => switchTheme(media.matches ? 'dark' : 'light');
+media.addEventListener('change', sync);
+sync();</code></pre>
+
+            <h4>User Preference Persistence</h4>
+<pre><code>const THEME_KEY = 'ck-multiselect-theme';
+function persistTheme(theme) {
+    localStorage.setItem(THEME_KEY, theme);
+    switchTheme(theme);
+}
+persistTheme(localStorage.getItem(THEME_KEY) ?? 'light');</code></pre>
+
+            <h3>Theme Best Practices</h3>
+            <ul>
+                <li>Maintain $\text{contrast ratio} \ge 4.5:1$ on body text and 3:1 on large text.</li>
+                <li>Add <code>transition</code> declarations to host elements for smooth swaps.</li>
+                <li>Respect <code>prefers-reduced-motion</code> when animating theme transitions.</li>
+                <li>Batch DOM writes (e.g., requestAnimationFrame) when toggling many components.</li>
+                <li>Document theme tokens next to product design guidelines.</li>
+            </ul>
+
+            <h3>Theme Examples</h3>
+            <ul>
+                <li><a href="examples/themes.html#complete-themes">Complete gallery</a></li>
+                <li><a href="examples/themes.html#theme-variables">Variable playground</a></li>
+                <li><a href="examples/themes.html#custom-theme-tutorial">Custom theme tutorial</a></li>
+                <li><a href="examples/themes.html#theme-switching">Interactive switcher</a></li>
+                <li><a href="examples/themes.html#system-theme">System integration</a></li>
+                <li><a href="examples/themes.html#theme-transitions">Theme transitions</a></li>
+                <li><a href="examples/themes.html#high-contrast">High contrast + accessibility</a></li>
+                <li><a href="examples/themes.html#theme-composition">Theme composition</a></li>
+                <li><a href="examples/themes.html#real-world-themes">Real-world scenarios</a></li>
+            </ul>
+        </section>
+
+        <section id="methods">
+            <h2>Methods</h2>
+            <p>The component intentionally ships without imperative methods. Instead, mutate attributes/properties or listen for emitted events. If you need helper routines, wrap them inside your application layer:</p>
+<pre><code>async function patchSelections(grid, selections) {
+    const next = await fetch('/api/scopes').then(r => r.json());
+    grid.setAttribute('availableItems', JSON.stringify(next));
+    grid.setAttribute('selectedItems', JSON.stringify(selections));
+}</code></pre>
+            <p>This pattern keeps the component declarative while giving you full control over state orchestration.</p>
+        </section>
+
+        <section id="events">
+            <h2>Events</h2>
+
+            <h3><code>ck-multiselect-option-selected</code></h3>
+            <h4>Payload Structure</h4>
+<pre><code>{
+    detail: {
+        option: { id: string, label: string, name: string, value: string },
+        checked: true
+    },
+    bubbles: true,
+    composed: true,
+    cancelable: false
+}</code></pre>
+            <h4>When Fired</h4>
+            <ul>
+                <li>User checks a checkbox via click, keyboard, or assistive technology.</li>
+                <li>Code toggles the underlying <code>input</code> element (rare; not recommended).</li>
+            </ul>
+            <h4>Event Properties</h4>
+            <table>
+                <tr><th>Bubbles</th><td>Yes</td></tr>
+                <tr><th>Cancelable</th><td>No</td></tr>
+                <tr><th>Composed</th><td>Yes</td></tr>
+            </table>
+            <h4>Typical Handler</h4>
+<pre><code>grid.addEventListener('ck-multiselect-option-selected', event => {
+    const { option } = event.detail;
+    console.info('Selected scope', option.value);
+    analytics.track('scope:selected', option);
+});</code></pre>
+            <h4>Best Practices</h4>
+            <ul>
+                <li>Debounce network writes when users toggle rapidly.</li>
+                <li>Use <code>event.detail.option</code> rather than re-querying the DOM.</li>
+                <li>Combine with <code>selectedItems</code> updates for server-side truths.</li>
+            </ul>
+            <p><strong>Interactive Example:</strong> <a href="examples/internal-state.html#event-visualization">Event visualization wall</a></p>
+
+            <h3><code>ck-multiselect-option-unselected</code></h3>
+            <h4>Payload Structure</h4>
+<pre><code>{
+    detail: {
+        option: { id: string, label: string, name: string, value: string },
+        checked: false
+    },
+    bubbles: true,
+    composed: true,
+    cancelable: false
+}</code></pre>
+            <h4>When Fired</h4>
+            <ul>
+                <li>Any checked checkbox transitions to unchecked.</li>
+                <li>Programmatic attribute changes that rebuild selections.</li>
+            </ul>
+            <h4>Event Properties</h4>
+            <table>
+                <tr><th>Bubbles</th><td>Yes</td></tr>
+                <tr><th>Cancelable</th><td>No</td></tr>
+                <tr><th>Composed</th><td>Yes</td></tr>
+            </table>
+            <h4>Typical Handler</h4>
+<pre><code>grid.addEventListener('ck-multiselect-option-unselected', event => {
+    const { option } = event.detail;
+    revokeScope(option.value);
+});</code></pre>
+            <h4>Best Practices</h4>
+            <ul>
+                <li>Guard against unintended toggles by freezing UI while saves are pending.</li>
+                <li>Mirror deselections into <code>selectedItems</code> to keep declarative state aligned.</li>
+                <li>Use structured logging to capture who removed which permission.</li>
+            </ul>
+            <p><strong>Interactive Example:</strong> <a href="examples/internal-state.html#event-visualization">Event visualization wall</a></p>
+        </section>
+
+        <section id="examples">
+            <h2>Examples</h2>
+            <h3>Basic Usage</h3>
+            <ul>
+                <li><a href="examples/basic-usage.html">Getting Started</a> – Minimal markup, default styling, quick validation.</li>
+            </ul>
+            <h3>Advanced Usage</h3>
+            <ul>
+                <li><a href="examples/advanced-usage.html">Advanced Patterns</a> – Complex datasets, performance notes, imperative orchestration.</li>
+            </ul>
+            <h3>Integration Patterns</h3>
+            <ul>
+                <li><a href="examples/form-integration.html">Form Integration</a> – Full validation lifecycle inside forms.</li>
+            </ul>
+            <h3>Edge Cases &amp; States</h3>
+            <ul>
+                <li><a href="examples/data-states.html">Data States</a> – Loading, error, disabled, dirty/pristine, and transition logic.</li>
+                <li><a href="examples/edge-cases.html">Edge Cases</a> – Stress tests, rapid updates, attribute churn.</li>
+            </ul>
+            <h3>Styling &amp; Themes</h3>
+            <ul>
+                <li><a href="examples/styling.html">Component Styling</a></li>
+                <li><a href="examples/themes.html">Theme Gallery</a></li>
+            </ul>
+            <h3>Internal State &amp; Debugging</h3>
+            <ul>
+                <li><a href="examples/internal-state.html">State Inspector &amp; Debugging Toolkit</a></li>
+            </ul>
+        </section>
+
+        <section id="faq">
+            <h2>FAQ &amp; Troubleshooting</h2>
+            <h3>Common Mistakes</h3>
+
+            <h4>Why isn’t my attribute changing anything?</h4>
+            <p><strong>Problem:</strong> JSON-driven attributes are treated as raw strings when typed directly into HTML.</p>
+            <p><strong>Solution:</strong> Always serialize via JavaScript:</p>
+<pre><code>// Wrong
+&lt;ck-multiselect-grid selectedItems="['a','b']"&gt;&lt;/ck-multiselect-grid&gt;
+
+// Correct
+grid.setAttribute('selectedItems', JSON.stringify(['Scope.Read']));</code></pre>
+
+            <h4>Events not firing?</h4>
+            <p><strong>Problem:</strong> Listeners attached before the component upgrades may miss early events.</p>
+            <p><strong>Solution:</strong> Wait for <code>customElements.whenDefined('ck-multiselect-grid')</code> or set listeners after DOMContentLoaded.</p>
+
+            <h4>Checkboxes render without borders</h4>
+            <p><strong>Problem:</strong> Required CSS tokens are missing.</p>
+            <p><strong>Solution:</strong> Define at least <code>--input-border</code>, <code>--card-bg</code>, and <code>--primary-color</code> on the document root or a wrapping container.</p>
+
+            <h4>JSON parsing errors in console</h4>
+            <p><strong>Problem:</strong> Attributes contain trailing commas or comments.</p>
+            <p><strong>Solution:</strong> feed sanitized JSON only; use helper factories <code>grid.setAttribute(name, JSON.stringify(value))</code>.</p>
+
+            <h4>Form submission does not include selections</h4>
+            <p><strong>Problem:</strong> Checkboxes live inside the shadow root, so native form serialization ignores them.</p>
+            <p><strong>Solution:</strong> Mirror selections into hidden inputs or serialize <code>selectedItems</code> on submit. See <a href="examples/form-integration.html#basic-form">Form Basics</a>.</p>
+
+            <h3>Theming Questions</h3>
+            <h4>My custom theme isn’t applying</h4>
+            <p>Ensure your selector targets the host, not descendants:</p>
+<pre><code>/* ✅ */
+ck-multiselect-grid.my-theme { --card-bg: #fff; }
+
+/* ❌ */
+ck-multiselect-grid .multiselect-option { --card-bg: #fff; }</code></pre>
+
+            <h4>Can I run different themes simultaneously?</h4>
+            <p>Yes—use attribute selectors per instance: <code>&lt;ck-multiselect-grid theme="ocean"&gt;</code>.</p>
+
+            <h4>How do I animate theme switches?</h4>
+            <p>Add transitions at the host or <code>*</code> selector: <code>transition: background-color 220ms ease, color 220ms ease;</code></p>
+
+            <h4>Do themes hurt performance?</h4>
+            <p>CSS custom properties are computed efficiently. Bottlenecks typically come from heavy re-render logic; batch attribute updates to a single microtask.</p>
+
+            <h3>Validation &amp; Error Handling</h3>
+            <h4>How do I know if the selection is “valid”?</h4>
+            <p>Use your own rules. Example from <a href="examples/basic-usage.html#validation-basics">Validation Basics</a> counts checked boxes and surfaces errors if none are selected.</p>
+
+            <h4>Can I force an error state?</h4>
+            <p>Add your own UI chrome based on the <code>selectedItems</code> snapshot. Because the component is stateless, parent logic controls error presentation.</p>
+
+            <h4>When should I run validation?</h4>
+            <p>Listen for the selection events and validate on input; re-run on form submit before persisting.</p>
+
+            <h3>Internal State</h3>
+            <h4>How do I inspect what’s happening inside?</h4>
+            <p>The shadow root is open, so you can inspect <code>grid.shadowRoot.querySelectorAll('input')</code> for live state. See <a href="examples/internal-state.html#state-inspector">State Inspector</a>.</p>
+
+            <h4>Dirty vs. pristine?</h4>
+            <p>Track this yourself by flagging when an event has fired. Guidance is provided in <a href="examples/data-states.html#dirty-pristine">Dirty/Pristine</a>.</p>
+
+            <h4>How do I wire loading indicators?</h4>
+            <p>Toggle a wrapper class (e.g., <code>data-loading</code>) while asynchronous data is being fetched, as demonstrated in <a href="examples/data-states.html#loading-state">Loading State</a>.</p>
+
+            <h3>Performance Tips</h3>
+            <ul>
+                <li>Pre-serialize JSON once and reuse references to avoid repeated <code>JSON.stringify</code>.</li>
+                <li>Throttle attribute updates when streaming data; mutate <code>availableItems</code> only when the dataset meaningfully changes.</li>
+            </ul>
+
+            <h3>Accessibility</h3>
+            <p>The fieldset semantics keep screen reader navigation predictable. Every checkbox is still a native control, so keyboard navigation (Tab → Space) works by default.</p>
+
+            <h3>Browser Support</h3>
+            <table>
+                <tr><th>Browser</th><th>Minimum</th><th>Notes</th></tr>
+                <tr><td>Chrome / Edge</td><td>90+</td><td>Full constructable stylesheet support.</td></tr>
+                <tr><td>Firefox</td><td>88+</td><td>Falls back to injected <code>&lt;style&gt;</code>.</td></tr>
+                <tr><td>Safari</td><td>14+</td><td>Constructable stylesheet polyfill recommended for large apps.</td></tr>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
