@@ -84,7 +84,7 @@ An accessible multiselect grid that combines a configurable `<fieldset>` header 
 | `fieldset-id` | string | `scopes-fieldset` | Sets the `<fieldset>` `id` that wraps the form group |
 | `fieldset-class` | string | `""` | Appends one or more classes in addition to the default `multiselect-fieldset` |
 | `availableItems` | JSON array | `[]` | Array of strings or objects (`{ id?, name?, label?, value? }`) describing each checkbox option |
-| `selectedItems` | JSON array | `[]` | Array of strings referencing the option `value` entries that should render as checked |
+| `selectedItems` | JSON array | `[]` | Array of strings referencing the option `value` entries that should render as checked; values missing from `availableItems` are synthesized into the grid so persisted selections still display |
 
 #### Properties
 

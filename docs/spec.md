@@ -80,7 +80,7 @@ The component renders the following structure inside its shadow root:
 
 - **Type:** JSON array of strings
 - **Default:** `[]`
-- **Purpose:** Values that should render as checked. Each entry must match an option's `value`.
+- **Purpose:** Values that should render as checked. Each entry must match an option's `value`; if a listed value is missing from `availableItems`, the component synthesizes a checkbox row using that value for the `label`, `name`, and `value` fields so the selection still appears.
 
 ## Behavior
 
@@ -88,6 +88,7 @@ The component renders the following structure inside its shadow root:
 - Helper text uses `description` if available, otherwise falls back to `discription` or the default copy.
 - Fieldset metadata (`id`, classes) updates whenever `fieldset-id` or `fieldset-class` mutates.
 - Available/selected item arrays are parsed from JSON (strings or objects) and drive the checkbox grid; attribute mutations trigger a re-render so the grid stays in sync.
+- Selected values missing from the available list are converted into synthetic options appended to the grid using the trimmed string as the pill text and checkbox metadata, ensuring persisted selections remain visible even when their source data is temporarily unavailable.
 - Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="scopes-label"` for assistive context.
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.

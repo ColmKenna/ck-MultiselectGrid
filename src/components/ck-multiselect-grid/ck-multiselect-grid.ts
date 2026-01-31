@@ -179,8 +179,14 @@ export class CkMultiselectGrid extends HTMLElement {
 
   private renderMultiselectOptions() {
     if (!this.multiselectGroup) return;
-    const selectedValues = new Set(this.getSelectedValues());
-    const options = this.getAvailableOptions();
+    const selectedValuesList = this.getSelectedValues();
+    const selectedValues = new Set(selectedValuesList);
+    const availableOptions = this.getAvailableOptions();
+    const synthesizedOptions = this.buildSelectedOnlyOptions(
+      availableOptions,
+      selectedValuesList
+    );
+    const options = [...availableOptions, ...synthesizedOptions];
     const usedIds = new Set<string>();
 
     const optionNodes = options.map((option, index) => {
@@ -225,6 +231,37 @@ export class CkMultiselectGrid extends HTMLElement {
     optionDiv.appendChild(label);
 
     return optionDiv;
+  }
+
+  private buildSelectedOnlyOptions(
+    existingOptions: MultiselectOption[],
+    selectedValues: string[]
+  ): MultiselectOption[] {
+    if (!selectedValues.length) {
+      return [];
+    }
+
+    const existingValueSet = new Set(
+      existingOptions.map(option => option.value)
+    );
+    const synthesized: MultiselectOption[] = [];
+
+    selectedValues.forEach(value => {
+      if (existingValueSet.has(value)) {
+        return;
+      }
+
+      const normalized = this.normalizeOption(
+        value,
+        existingOptions.length + synthesized.length
+      );
+      if (normalized) {
+        existingValueSet.add(normalized.value);
+        synthesized.push(normalized);
+      }
+    });
+
+    return synthesized;
   }
 
   private getAvailableOptions(): MultiselectOption[] {

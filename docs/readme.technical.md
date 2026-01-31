@@ -30,6 +30,7 @@
 
 - `availableItems` accepts a JSON array of either strings or objects with `id?`, `name?`, `label?`, and `value?` fields; strings are treated as both the label and value.
 - `selectedItems` accepts a JSON array of strings that should match the option `value` entries; they feed a `Set` for quick lookup when rendering.
+- `buildSelectedOnlyOptions()` walks the selected list and synthesizes `MultiselectOption`s for any values not already represented so persisted selections survive when the available list is filtered by the host application.
 - Parsing happens inside a small helper that catches `JSON.parse` errors, logs a warning for debugging, and falls back to an empty array to avoid throwing inside lifecycle hooks.
 - `slugify` keeps backwards-compatible id generation (lowercase + whitespace → hyphen) and a resolver guarantees uniqueness within a render.
 

@@ -23,7 +23,7 @@
 ### Attributes
 
 - `availableItems` — JSON array of strings or option objects (`{ id?, name?, label?, value? }`) used to build the checkbox list
-- `selectedItems` — JSON array of strings matching option `value` entries that should be checked
+- `selectedItems` — JSON array of strings matching option `value` entries that should be checked; if a value is absent from `availableItems`, the component synthesizes a matching checkbox row so persisted selections never disappear
 
 ## Styling
 

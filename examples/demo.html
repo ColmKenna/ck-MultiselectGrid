@@ -40,6 +40,11 @@
   </head>
   <body>
     <h1>ck-multiselect-grid demo</h1>
+    <p>
+      Tip: Values listed in <code>selectedItems</code> are rendered even if they are missing
+      from <code>availableItems</code>. Try removing "Scope.PolicyOnly" from the available list and
+      notice the pill stays visible.
+    </p>
 
     <div class="demo-row">
       <ck-multiselect-grid
@@ -49,7 +54,7 @@
         fieldset-id="scopes-fieldset"
         fieldset-class="scope-block"
         availableItems='["Scope.Read","Scope.Write","Scope.Manage"]'
-        selectedItems='["Scope.Write"]'
+        selectedItems='["Scope.Write","Scope.PolicyOnly"]'
       ></ck-multiselect-grid>
 
       <label>
@@ -82,7 +87,7 @@
 
       <label>
         Selected Items (JSON array)
-        <textarea id="selected-items">["Scope.Write"]</textarea>
+        <textarea id="selected-items">["Scope.Write","Scope.PolicyOnly"]</textarea>
       </label>
     </div>
 

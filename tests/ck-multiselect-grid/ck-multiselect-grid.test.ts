@@ -167,6 +167,29 @@ describe('CkMultiselectGrid Component', () => {
     expect(pillText).toBe('Scope.Write');
   });
 
+  test('should synthesize missing options for selected values', () => {
+    const available = ['Scope.Read'];
+    const selected = ['Scope.Write'];
+
+    element.setAttribute('availableItems', JSON.stringify(available));
+    element.setAttribute('selectedItems', JSON.stringify(selected));
+    element.connectedCallback();
+
+    const options = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    expect(options?.length).toBe(2);
+
+    const readInput = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    expect(readInput?.hasAttribute('checked')).toBe(false);
+
+    const syntheticInput = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    expect(syntheticInput).toBeTruthy();
+    expect(syntheticInput?.getAttribute('value')).toBe('Scope.Write');
+    expect(syntheticInput?.hasAttribute('checked')).toBe(true);
+
+    const syntheticLabel = element.shadowRoot?.getElementById('scope.write-desc');
+    expect(syntheticLabel?.textContent).toBe('Scope.Write');
+  });
+
   test('should prefer description over discription when both are present', () => {
     element.setAttribute('description', 'Correctly spelled description.');
     element.setAttribute('discription', 'Legacy misspelling.');
