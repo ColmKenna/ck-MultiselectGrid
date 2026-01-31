@@ -136,6 +136,36 @@ describe('CkMultiselectGrid Component', () => {
     expect(fieldset?.classList.contains('dynamic')).toBe(true);
   });
 
+  test('should render checkbox options from availableItems and selectedItems', () => {
+    const available = ['Scope.Read', 'Scope.Write'];
+    const selected = ['Scope.Write'];
+
+    element.setAttribute('availableItems', JSON.stringify(available));
+    element.setAttribute('selectedItems', JSON.stringify(selected));
+    element.connectedCallback();
+
+    const grid = element.shadowRoot?.querySelector('.multiselect-grid');
+    expect(grid?.getAttribute('role')).toBe('group');
+    expect(grid?.getAttribute('aria-labelledby')).toBe('scopes-label');
+
+    const options = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    expect(options?.length).toBe(2);
+
+    const readInput = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    expect(readInput).toBeTruthy();
+    expect(readInput?.classList.contains('multiselect-input')).toBe(true);
+    expect(readInput?.getAttribute('name')).toBe('Scope.Read');
+    expect(readInput?.getAttribute('value')).toBe('Scope.Read');
+    expect(readInput?.getAttribute('aria-describedby')).toBe('scope.read-desc');
+    expect(readInput?.hasAttribute('checked')).toBe(false);
+
+    const writeInput = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    expect(writeInput?.hasAttribute('checked')).toBe(true);
+
+    const pillText = element.shadowRoot?.querySelectorAll('.multiselect-pill')?.[1]?.textContent;
+    expect(pillText).toBe('Scope.Write');
+  });
+
   test('should prefer description over discription when both are present', () => {
     element.setAttribute('description', 'Correctly spelled description.');
     element.setAttribute('discription', 'Legacy misspelling.');
@@ -160,6 +190,35 @@ describe('CkMultiselectGrid Component', () => {
     const helpText = element.shadowRoot?.querySelector('.form-text');
     expect(label?.textContent).toBe(injectedTitle);
     expect(helpText?.textContent).toBe(injectedDescription);
+  });
+
+  test('should update selected checkboxes when selectedItems changes', async () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha']));
+    element.setAttribute('selectedItems', JSON.stringify([]));
+    element.connectedCallback();
+
+    const checkbox = element.shadowRoot?.querySelector('input.multiselect-input');
+    expect(checkbox?.hasAttribute('checked')).toBe(false);
+
+    element.setAttribute('selectedItems', JSON.stringify(['alpha']));
+    await Promise.resolve();
+
+    const updatedCheckbox = element.shadowRoot?.querySelector('input.multiselect-input');
+    expect(updatedCheckbox?.hasAttribute('checked')).toBe(true);
+  });
+
+  test('should refresh available options when availableItems changes', async () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha']));
+    element.connectedCallback();
+
+    const initialOptions = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    expect(initialOptions?.length).toBe(1);
+
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    await Promise.resolve();
+
+    const updatedOptions = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    expect(updatedOptions?.length).toBe(2);
   });
 
   test('should not duplicate DOM when reconnected', () => {

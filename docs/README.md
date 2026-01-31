@@ -11,14 +11,19 @@
   description="Choose which resource scopes this client is allowed to request."
 ></ck-multiselect-grid>
 ```
+```html
+<ck-multiselect-grid
+  title="Select Resource Scopes"
+  description="Choose which resource scopes this client is allowed to request."
+  availableItems='["Scope.Read","Scope.Write"]'
+  selectedItems='["Scope.Write"]'
+></ck-multiselect-grid>
+```
 
 ### Attributes
 
-- `title`: label text
-- `description`: helper text (preferred)
-- `discription`: helper text (legacy spelling)
-- `fieldset-id`: sets the wrapping `<fieldset>` `id` (defaults to `scopes-fieldset`)
-- `fieldset-class`: appends custom classes to the default `multiselect-fieldset`
+- `availableItems` — JSON array of strings or option objects (`{ id?, name?, label?, value? }`) used to build the checkbox list
+- `selectedItems` — JSON array of strings matching option `value` entries that should be checked
 
 ## Demo
 
