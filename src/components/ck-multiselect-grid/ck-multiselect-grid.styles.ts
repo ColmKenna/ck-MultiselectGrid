@@ -6,18 +6,11 @@ export const ckMultiselectGridCSS = `
 }
 
 .ck-multiselect-grid {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease;
 }
 
-.ck-multiselect-grid:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
 
 .multiselect-fieldset {
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -34,7 +27,6 @@ export const ckMultiselectGridCSS = `
 .form-label {
   font-weight: 600;
   font-size: 1rem;
-  color: #ffffff;
 }
 
 .form-text {
