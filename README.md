@@ -60,6 +60,12 @@ A small form header block that renders a label and helper text.
   title="Select Resource Scopes"
   description="Choose which resource scopes this client is allowed to request."
 ></ck-multiselect-grid>
+
+<!-- Control the surrounding fieldset -->
+<ck-multiselect-grid
+  fieldset-id="scopes-fieldset"
+  fieldset-class="scope-block"
+></ck-multiselect-grid>
 ```
 
 #### Attributes
@@ -69,6 +75,8 @@ A small form header block that renders a label and helper text.
 | `title` | string | "Select Resource Scopes" | Label text |
 | `description` | string | "Choose which resource scopes this client is allowed to request." | Helper text (preferred) |
 | `discription` | string | "Choose which resource scopes this client is allowed to request." | Helper text (legacy spelling; `description` wins if both exist) |
+| `fieldset-id` | string | `scopes-fieldset` | Sets the `<fieldset>` `id` that wraps the form group |
+| `fieldset-class` | string | `""` | Appends one or more classes in addition to the default `multiselect-fieldset` |
 
 #### Properties
 

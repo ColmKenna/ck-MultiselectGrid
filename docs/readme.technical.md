@@ -4,6 +4,7 @@
 
 - The component creates its internal DOM once in `connectedCallback()` (guarded so it runs only once) and updates only `textContent` on subsequent renders.
 - This avoids XSS risks from string interpolation into `innerHTML`.
+- Layout now includes a cached `<fieldset>` element that wraps the `.form-group` for accessibility semantics.
 
 ## Styling Strategy
 
@@ -18,7 +19,13 @@
 ## Observed Attributes
 
  - `title`, `description`, `discription` (legacy spelling)
+ - `fieldset-id`, `fieldset-class` for fieldset metadata
 
 ## Attribute Precedence
 
 - If both `description` and `discription` are present, `description` wins.
+
+## Fieldset Metadata
+
+- `fieldset-id` reflects onto the `<fieldset>` `id`, defaulting to `scopes-fieldset` for predictable referencing.
+- `fieldset-class` accepts space-delimited tokens that are appended to the required `multiselect-fieldset` class, enabling theming hooks.

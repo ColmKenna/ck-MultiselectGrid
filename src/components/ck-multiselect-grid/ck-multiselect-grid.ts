@@ -8,6 +8,7 @@ export class CkMultiselectGrid extends HTMLElement {
   private initialized = false;
 
   private container!: HTMLDivElement;
+  private fieldset!: HTMLFieldSetElement;
   private titleLabel!: HTMLDivElement;
   private descriptionText!: HTMLDivElement;
 
@@ -32,7 +33,13 @@ export class CkMultiselectGrid extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['title', 'description', 'discription'];
+    return [
+      'title',
+      'description',
+      'discription',
+      'fieldset-id',
+      'fieldset-class',
+    ];
   }
 
   connectedCallback() {
@@ -89,6 +96,9 @@ export class CkMultiselectGrid extends HTMLElement {
     this.container = document.createElement('div');
     this.container.className = 'ck-multiselect-grid';
 
+    this.fieldset = document.createElement('fieldset');
+    this.applyFieldsetMetadata();
+
     const formGroup = document.createElement('div');
     formGroup.className = 'form-group';
 
@@ -101,7 +111,8 @@ export class CkMultiselectGrid extends HTMLElement {
 
     formGroup.appendChild(this.titleLabel);
     formGroup.appendChild(this.descriptionText);
-    this.container.appendChild(formGroup);
+    this.fieldset.appendChild(formGroup);
+    this.container.appendChild(this.fieldset);
     this.shadow.appendChild(this.container);
   }
 
@@ -113,9 +124,33 @@ export class CkMultiselectGrid extends HTMLElement {
     );
   }
 
+  private getFieldsetId(): string {
+    return this.getAttribute('fieldset-id')?.trim() || 'scopes-fieldset';
+  }
+
+  private getFieldsetClassName(): string {
+    const classes = ['multiselect-fieldset'];
+    const extra = this.getAttribute('fieldset-class');
+    if (extra) {
+      const tokens = extra
+        .split(/\s+/)
+        .map(token => token.trim())
+        .filter(Boolean);
+      classes.push(...tokens);
+    }
+    return classes.join(' ');
+  }
+
+  private applyFieldsetMetadata() {
+    if (!this.fieldset) return;
+    this.fieldset.id = this.getFieldsetId();
+    this.fieldset.className = this.getFieldsetClassName();
+  }
+
   private render() {
     this.titleLabel.textContent = this.title;
     this.descriptionText.textContent = this.getDescriptionText();
+    this.applyFieldsetMetadata();
   }
 }
 

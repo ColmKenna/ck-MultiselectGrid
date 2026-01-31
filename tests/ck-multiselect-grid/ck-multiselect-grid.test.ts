@@ -71,11 +71,13 @@ describe('CkMultiselectGrid Component', () => {
     expect(label?.textContent).toBe('Select Another Title');
   });
 
-  test('should observe title, description and discription attributes', () => {
+  test('should observe title, description, discription and fieldset attributes', () => {
     const observedAttributes = CkMultiselectGrid.observedAttributes;
     expect(observedAttributes).toContain('title');
     expect(observedAttributes).toContain('description');
     expect(observedAttributes).toContain('discription');
+    expect(observedAttributes).toContain('fieldset-id');
+    expect(observedAttributes).toContain('fieldset-class');
   });
 
   test('should have default title and discription values', () => {
@@ -87,6 +89,51 @@ describe('CkMultiselectGrid Component', () => {
     expect(helpText?.textContent).toBe(
       'Choose which resource scopes this client is allowed to request.'
     );
+  });
+
+  test('should wrap content in a default fieldset', () => {
+    element.connectedCallback();
+
+    const fieldset = element.shadowRoot?.querySelector('fieldset');
+    const formGroup = element.shadowRoot?.querySelector('.form-group');
+
+    expect(fieldset).toBeTruthy();
+    expect(fieldset?.id).toBe('scopes-fieldset');
+    expect(fieldset?.classList.contains('multiselect-fieldset')).toBe(true);
+    expect(formGroup?.parentElement).toBe(fieldset);
+  });
+
+  test('should use attribute-driven fieldset id', () => {
+    element.setAttribute('fieldset-id', 'custom-scopes');
+    element.connectedCallback();
+
+    const fieldset = element.shadowRoot?.querySelector('fieldset');
+    expect(fieldset?.id).toBe('custom-scopes');
+  });
+
+  test('should append custom fieldset class while keeping the default', () => {
+    element.setAttribute('fieldset-class', 'extra spacing');
+    element.connectedCallback();
+
+    const fieldset = element.shadowRoot?.querySelector('fieldset');
+    expect(fieldset?.classList.contains('multiselect-fieldset')).toBe(true);
+    expect(fieldset?.classList.contains('extra')).toBe(true);
+    expect(fieldset?.classList.contains('spacing')).toBe(true);
+  });
+
+  test('should update fieldset metadata when attributes change post-init', () => {
+    element.connectedCallback();
+
+    element.setAttribute('fieldset-id', 'later-id');
+    element.attributeChangedCallback('fieldset-id', 'scopes-fieldset', 'later-id');
+
+    element.setAttribute('fieldset-class', 'dynamic');
+    element.attributeChangedCallback('fieldset-class', '', 'dynamic');
+
+    const fieldset = element.shadowRoot?.querySelector('fieldset');
+    expect(fieldset?.id).toBe('later-id');
+    expect(fieldset?.classList.contains('multiselect-fieldset')).toBe(true);
+    expect(fieldset?.classList.contains('dynamic')).toBe(true);
   });
 
   test('should prefer description over discription when both are present', () => {

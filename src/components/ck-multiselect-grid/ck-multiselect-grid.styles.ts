@@ -19,6 +19,13 @@ export const ckMultiselectGridCSS = `
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
+.multiselect-fieldset {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  margin: 0;
+  padding: 1.5rem;
+}
+
 .form-group {
   display: grid;
   gap: 0.5rem;

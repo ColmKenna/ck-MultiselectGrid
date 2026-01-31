@@ -28,6 +28,8 @@
         id="grid"
         title="Select Resource Scopes"
         description="Choose which resource scopes this client is allowed to request."
+        fieldset-id="scopes-fieldset"
+        fieldset-class="scope-block"
       ></ck-multiselect-grid>
 
       <label>
@@ -42,6 +44,16 @@
           value="Choose which resource scopes this client is allowed to request."
         />
       </label>
+
+      <label>
+        Fieldset ID
+        <input id="fieldset-id" value="scopes-fieldset" />
+      </label>
+
+      <label>
+        Fieldset Classes (space-delimited)
+        <input id="fieldset-class" value="scope-block" />
+      </label>
     </div>
 
     <script type="module">
@@ -51,14 +63,26 @@
       const grid = document.getElementById('grid');
       const titleInput = document.getElementById('title');
       const descriptionInput = document.getElementById('description');
+      const fieldsetIdInput = document.getElementById('fieldset-id');
+      const fieldsetClassInput = document.getElementById('fieldset-class');
 
       const sync = () => {
         grid.setAttribute('title', titleInput.value);
         grid.setAttribute('description', descriptionInput.value);
+        grid.setAttribute('fieldset-id', fieldsetIdInput.value || 'scopes-fieldset');
+
+        const nextClass = fieldsetClassInput.value.trim();
+        if (nextClass) {
+          grid.setAttribute('fieldset-class', nextClass);
+        } else {
+          grid.removeAttribute('fieldset-class');
+        }
       };
 
       titleInput.addEventListener('input', sync);
       descriptionInput.addEventListener('input', sync);
+      fieldsetIdInput.addEventListener('input', sync);
+      fieldsetClassInput.addEventListener('input', sync);
     </script>
   </body>
 </html>

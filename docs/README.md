@@ -17,6 +17,8 @@
 - `title`: label text
 - `description`: helper text (preferred)
 - `discription`: helper text (legacy spelling)
+- `fieldset-id`: sets the wrapping `<fieldset>` `id` (defaults to `scopes-fieldset`)
+- `fieldset-class`: appends custom classes to the default `multiselect-fieldset`
 
 ## Demo
 
