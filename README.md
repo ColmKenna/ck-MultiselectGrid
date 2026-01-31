@@ -100,6 +100,25 @@ grid.addEventListener('ck-multiselect-option-selected', event => {
 });
 ```
 
+**Interaction note:** Users can click anywhere on the pill text/label to toggle the checkbox. The component mirrors the checkbox's `checked` attribute whenever the value changes so attribute selectors and DOM inspections always see the latest state, and it toggles both a `data-selected="true|false"` attribute and an `is-selected` class on each option for styling (and browsers that lack `:has`).
+
+#### Default palette
+
+Each CSS custom property now ships with a built-in fallback so the grid looks correct even if you never override the tokens:
+
+| Custom Property | Default |
+|-----------------|---------|
+| `--input-border` | `#d0d5dd` |
+| `--card-bg` | `#ffffff` |
+| `--surface-bg` | `#eef2ff` |
+| `--primary-color` | `#4338ca` |
+| `--focus-border` | `#4338ca` |
+| `--focus-shadow` | `0 0 0 3px rgba(67, 56, 202, 0.25)` |
+| `--option-pill-color` | `#0f172a` |
+| `--option-pill-active-bg` | `#4338ca` |
+| `--text-light` | `#ffffff` |
+| `--form-bg` | `#e2e8f0` |
+
 #### Properties
 
 The component also supports JavaScript property access:

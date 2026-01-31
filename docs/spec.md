@@ -83,6 +83,9 @@ The component renders the following structure inside its shadow root:
 - Fieldset metadata (`id`, classes) updates whenever `fieldset-id` or `fieldset-class` mutates.
 - Available/selected item arrays are parsed from JSON (strings or objects) and drive the checkbox grid; attribute mutations trigger a re-render so the grid stays in sync.
 - Selected values missing from the available list are converted into synthetic options appended to the grid using the trimmed string as the pill text and checkbox metadata, ensuring persisted selections remain visible even when their source data is temporarily unavailable.
+- Each `.multiselect-pill` proxies pointer clicks to its associated checkbox, so the entire pill/card surface toggles selection without forcing the user to target the hidden checkbox.
+- Checkbox `checked` attributes are re-synced on every change event (including pill clicks) so attribute selectors and DOM inspection stay truthful to the current state.
+- `.multiselect-option` elements mirror the checkbox state via a `data-selected="true|false"` attribute and an `is-selected` class, enabling CSS fallbacks for environments that lack `:has()` support.
 - Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="ck-multiselect-grid-label"` for assistive context.
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
@@ -107,6 +110,7 @@ Events are dispatched from the custom element, not the internal inputs, so hosts
 - `.multiselect-option` cards use CSS custom properties for border/background colors, hover/focus transitions, and print/contrast overrides. Checked states rely on `.multiselect-option:has(.multiselect-input:checked)` so the entire card reflects selection.
 - `.multiselect-input` is visually replaced by a custom checkbox that renders an inline SVG checkmark when selected, while keyboard focus uses `--focus-border`/`--focus-shadow` variables.
 - Theme tokens exposed: `--input-border`, `--card-bg`, `--surface-bg`, `--primary-color`, `--focus-border`, `--focus-shadow`, `--option-pill-color`, `--option-pill-active-bg`, `--text-light`, `--form-bg`.
+- Default palette (applied automatically if hosts do not override the tokens): `#d0d5dd` input borders, `#ffffff` card background, `#eef2ff` hover surface, `#4338ca` primary/focus colors, `0 0 0 3px rgba(67, 56, 202, 0.25)` focus shadow, `#0f172a` pill text, `#4338ca` pill active background, `#ffffff` pill active text, and `#e2e8f0` disabled fill.
 
 ## Removed Attributes
 

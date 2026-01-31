@@ -20,6 +20,7 @@ export class CkMultiselectGrid extends HTMLElement {
   private initialized = false;
 
   private inputOptionMap = new WeakMap<HTMLInputElement, MultiselectOption>();
+  private inputContainerMap = new WeakMap<HTMLInputElement, HTMLDivElement>();
   private handleInputChange = (event: Event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || target.type !== 'checkbox') {
@@ -32,6 +33,8 @@ export class CkMultiselectGrid extends HTMLElement {
     }
 
     const isSelected = target.checked;
+    this.syncCheckboxCheckedAttribute(target);
+    this.updateOptionSelectionState(target);
     const eventName = isSelected
       ? 'ck-multiselect-option-selected'
       : 'ck-multiselect-option-unselected';
@@ -234,11 +237,13 @@ export class CkMultiselectGrid extends HTMLElement {
     checkbox.value = option.value;
     checkbox.setAttribute('aria-describedby', `${option.id}-desc`);
     this.inputOptionMap.set(checkbox, option);
+    this.inputContainerMap.set(checkbox, optionDiv);
     checkbox.addEventListener('change', this.handleInputChange);
     if (isSelected) {
       checkbox.checked = true;
       checkbox.setAttribute('checked', 'checked');
     }
+    this.setOptionSelectionState(optionDiv, isSelected);
 
     const label = document.createElement('label');
     label.className = 'multiselect-label';
@@ -248,6 +253,8 @@ export class CkMultiselectGrid extends HTMLElement {
     pill.className = 'multiselect-pill';
     pill.id = `${option.id}-desc`;
     pill.textContent = option.label;
+    pill.dataset.checkboxId = option.id;
+    pill.addEventListener('click', this.handlePillClick);
 
     label.appendChild(pill);
     optionDiv.appendChild(checkbox);
@@ -285,6 +292,51 @@ export class CkMultiselectGrid extends HTMLElement {
     });
 
     return synthesized;
+  }
+
+  private syncCheckboxCheckedAttribute(input: HTMLInputElement) {
+    if (input.checked) {
+      input.setAttribute('checked', 'checked');
+    } else {
+      input.removeAttribute('checked');
+    }
+  }
+
+  private handlePillClick = (event: MouseEvent) => {
+    if (!(event.currentTarget instanceof HTMLElement)) {
+      return;
+    }
+
+    const checkboxId = event.currentTarget.dataset.checkboxId;
+    if (!checkboxId) {
+      return;
+    }
+
+    const checkbox = this.shadow.getElementById(checkboxId);
+    if (!(checkbox instanceof HTMLInputElement)) {
+      return;
+    }
+
+    event.preventDefault();
+    checkbox.checked = !checkbox.checked;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+
+  private updateOptionSelectionState(input: HTMLInputElement) {
+    const container = this.inputContainerMap.get(input);
+    if (!container) {
+      return;
+    }
+
+    this.setOptionSelectionState(container, input.checked);
+  }
+
+  private setOptionSelectionState(
+    container: HTMLDivElement,
+    isSelected: boolean
+  ) {
+    container.dataset.selected = isSelected ? 'true' : 'false';
+    container.classList.toggle('is-selected', isSelected);
   }
 
   private getAvailableOptions(): MultiselectOption[] {

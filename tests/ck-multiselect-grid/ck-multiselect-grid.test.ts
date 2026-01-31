@@ -308,6 +308,67 @@ describe('CkMultiselectGrid Component', () => {
     expect(eventDetail.checked).toBe(false);
   });
 
+  test('should toggle checkbox when pill is clicked', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
+    element.connectedCallback();
+
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement | null;
+    const pill = element.shadowRoot?.querySelector(
+      '.multiselect-pill'
+    ) as HTMLElement | null;
+
+    expect(checkbox).toBeTruthy();
+    expect(pill).toBeTruthy();
+    if (!checkbox || !pill) return;
+
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.hasAttribute('checked')).toBe(false);
+
+    pill.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+    expect(checkbox.checked).toBe(true);
+    expect(checkbox.hasAttribute('checked')).toBe(true);
+
+    pill.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+    expect(checkbox.checked).toBe(false);
+    expect(checkbox.hasAttribute('checked')).toBe(false);
+  });
+
+  test('should reflect selection state via data-selected attribute', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
+    element.setAttribute('selectedItems', JSON.stringify(['Item.Read']));
+    element.connectedCallback();
+
+    const option = element.shadowRoot?.querySelector(
+      '.multiselect-option'
+    ) as HTMLDivElement | null;
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement | null;
+
+    expect(option).toBeTruthy();
+    expect(checkbox).toBeTruthy();
+    if (!option || !checkbox) return;
+
+    expect(option.getAttribute('data-selected')).toBe('true');
+    expect(option.classList.contains('is-selected')).toBe(true);
+
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(option.getAttribute('data-selected')).toBe('false');
+    expect(option.classList.contains('is-selected')).toBe(false);
+
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(option.getAttribute('data-selected')).toBe('true');
+    expect(option.classList.contains('is-selected')).toBe(true);
+  });
+
   test('should not duplicate DOM when reconnected', () => {
     element.connectedCallback();
     document.body.removeChild(element);
@@ -339,5 +400,14 @@ describe('CkMultiselectGrid styles', () => {
       'background-image: url("data:image/svg+xml'
     );
     expect(ckMultiselectGridCSS).toContain('.multiselect-pill');
+    expect(ckMultiselectGridCSS).toContain(
+      'border: 1px solid var(--input-border, #d0d5dd);'
+    );
+    expect(ckMultiselectGridCSS).toContain(
+      'background-color: var(--option-pill-active-bg, #4338ca);'
+    );
+    expect(ckMultiselectGridCSS).toContain(
+      'color: var(--text-light, #ffffff);'
+    );
   });
 });

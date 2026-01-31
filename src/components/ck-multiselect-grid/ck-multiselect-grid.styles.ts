@@ -61,29 +61,33 @@ export const ckMultiselectGridCSS = `
 .multiselect-option {
   display: flex;
   align-items: center;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--input-border, #d0d5dd);
   border-radius: 0.375rem;
-  background-color: var(--card-bg);
+  background-color: var(--card-bg, #ffffff);
   transition: all 0.2s ease-in-out;
 }
 
 .multiselect-option:hover {
-  border-color: var(--primary-color);
-  background-color: var(--surface-bg);
+  border-color: var(--primary-color, #4338ca);
+  background-color: var(--surface-bg, #eef2ff);
 }
 
 .multiselect-option:focus-within {
-  outline: 2px solid var(--focus-border);
+  outline: 2px solid var(--focus-border, #4338ca);
   outline-offset: 2px;
 }
 
-.multiselect-option:has(.multiselect-input:checked) {
-  background-color: var(--option-pill-active-bg);
-  border-color: var(--primary-color);
+.multiselect-option:has(.multiselect-input:checked),
+.multiselect-option.is-selected,
+.multiselect-option[data-selected='true'] {
+  background-color: var(--option-pill-active-bg, #4338ca);
+  border-color: var(--primary-color, #4338ca);
 }
 
-.multiselect-option:has(.multiselect-input:checked) .multiselect-pill {
-  color: var(--text-light);
+.multiselect-option:has(.multiselect-input:checked) .multiselect-pill,
+.multiselect-option.is-selected .multiselect-pill,
+.multiselect-option[data-selected='true'] .multiselect-pill {
+  color: var(--text-light, #ffffff);
 }
 
 @media (prefers-contrast: more) {
@@ -109,16 +113,16 @@ export const ckMultiselectGridCSS = `
   margin: 0;
   margin-right: 0.75rem;
   cursor: pointer;
-  border: 1px solid var(--input-border);
+  border: 1px solid var(--input-border, #d0d5dd);
   border-radius: 0.25rem;
-  background-color: var(--card-bg);
+  background-color: var(--card-bg, #ffffff);
   transition: all 0.2s ease-in-out;
   flex-shrink: 0;
 }
 
 .multiselect-input:checked {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: var(--primary-color, #4338ca);
+  border-color: var(--primary-color, #4338ca);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: center;
@@ -127,18 +131,18 @@ export const ckMultiselectGridCSS = `
 
 .multiselect-input:focus {
   outline: 0;
-  border-color: var(--focus-border);
-  box-shadow: var(--focus-shadow);
+  border-color: var(--focus-border, #4338ca);
+  box-shadow: var(--focus-shadow, 0 0 0 3px rgba(67, 56, 202, 0.25));
 }
 
 .multiselect-input:focus-visible {
-  outline: 2px solid var(--focus-border);
+  outline: 2px solid var(--focus-border, #4338ca);
   outline-offset: 2px;
 }
 
 .multiselect-input:disabled {
-  background-color: var(--form-bg);
-  border-color: var(--input-border);
+  background-color: var(--form-bg, #e2e8f0);
+  border-color: var(--input-border, #d0d5dd);
   cursor: not-allowed;
   opacity: 0.65;
 }
@@ -188,7 +192,7 @@ export const ckMultiselectGridCSS = `
   word-break: break-word;
   overflow-wrap: break-word;
   line-height: 1.4;
-  color: var(--option-pill-color);
+  color: var(--option-pill-color, #0f172a);
 }
 
 @media (max-width: 575.98px) {

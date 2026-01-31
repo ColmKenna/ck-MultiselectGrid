@@ -202,7 +202,7 @@
                 <div>
                     <h3>Ideal Use Cases</h3>
                     <ul>
-                        <li>Scope selection for OAuth / OpenID clients.</li>
+                        <li>Permission selection for OAuth / OpenID clients.</li>
                         <li>Multi-permission toggles in admin consoles.</li>
                         <li>Tag pickers that need pill styling with checkbox semantics.</li>
                         <li>Persisted selections that must survive data drift.</li>
@@ -241,7 +241,7 @@ import { CkMultiselectGrid } from '@colmkenna/ck-webcomponents';</code></pre>
             <table>
                 <tr><th>Property</th><td>title</td></tr>
                 <tr><th>Type</th><td>string</td></tr>
-                <tr><th>Default</th><td>"Select Resource Scopes"</td></tr>
+                <tr><th>Default</th><td>"Select Items"</td></tr>
                 <tr><th>Valid Values</th><td>Any non-empty string; empty values collapse the label region</td></tr>
             </table>
             <p><strong>Description:</strong> Controls the accessible heading label announcing the purpose of the checkbox group. Updating the property instantly re-renders the label inside the shadow DOM and updates the <code>aria-labelledby</code> reference used by the checkbox grid.</p>
@@ -251,27 +251,17 @@ import { CkMultiselectGrid } from '@colmkenna/ck-webcomponents';</code></pre>
             <table>
                 <tr><th>Property</th><td>description</td></tr>
                 <tr><th>Type</th><td>string | null</td></tr>
-                <tr><th>Default</th><td>"Choose which resource scopes this client is allowed to request."</td></tr>
+                <tr><th>Default</th><td>"Choose the items that apply to this client."</td></tr>
                 <tr><th>Valid Values</th><td>Any string, typically one or two sentences of helper copy</td></tr>
             </table>
-            <p><strong>Description:</strong> Helper text rendered below the heading. When absent, the component falls back to the default copy or the legacy <code>discription</code> attribute. Keep this concise and actionable to maintain layout density.</p>
+            <p><strong>Description:</strong> Helper text rendered below the heading. When absent, the component falls back to the default copy. Keep this concise and actionable to maintain layout density.</p>
             <p><strong>Examples:</strong> <a href="examples/basic-usage.html#default-styling">Default Styling</a>, <a href="examples/advanced-usage.html#all-attributes">All Attributes Combined</a></p>
-
-            <h3><code>discription</code></h3>
-            <table>
-                <tr><th>Property</th><td>discription</td></tr>
-                <tr><th>Type</th><td>string | null</td></tr>
-                <tr><th>Default</th><td>"Choose which resource scopes this client is allowed to request."</td></tr>
-                <tr><th>Valid Values</th><td>Legacy spelling; same constraints as <code>description</code></td></tr>
-            </table>
-            <p><strong>Description:</strong> Backwards-compatible alias kept for existing markup. If both <code>description</code> and <code>discription</code> are present, <code>description</code> wins. Prefer migrating to the correctly spelled attribute.</p>
-            <p><strong>Examples:</strong> <a href="examples/edge-cases.html#attribute-removal">Attribute Removal</a></p>
 
             <h3><code>fieldset-id</code></h3>
             <table>
                 <tr><th>Property</th><td>– (attribute only)</td></tr>
                 <tr><th>Type</th><td>string</td></tr>
-                <tr><th>Default</th><td>"scopes-fieldset"</td></tr>
+                <tr><th>Default</th><td>"ck-multiselect-grid-fieldset"</td></tr>
                 <tr><th>Valid Values</th><td>Any valid HTML id token</td></tr>
             </table>
             <p><strong>Description:</strong> Sets the id on the internal <code>&lt;fieldset&gt;</code> wrapper. Use this to wire analytics, automated tests, or document fragments that need predictable anchors.</p>
@@ -575,7 +565,7 @@ persistTheme(localStorage.getItem(THEME_KEY) ?? 'light');</code></pre>
             <h2>Methods</h2>
             <p>The component intentionally ships without imperative methods. Instead, mutate attributes/properties or listen for emitted events. If you need helper routines, wrap them inside your application layer:</p>
 <pre><code>async function patchSelections(grid, selections) {
-    const next = await fetch('/api/scopes').then(r => r.json());
+    const next = await fetch('/api/items').then(r => r.json());
     grid.setAttribute('availableItems', JSON.stringify(next));
     grid.setAttribute('selectedItems', JSON.stringify(selections));
 }</code></pre>
@@ -610,8 +600,8 @@ persistTheme(localStorage.getItem(THEME_KEY) ?? 'light');</code></pre>
             <h4>Typical Handler</h4>
 <pre><code>grid.addEventListener('ck-multiselect-option-selected', event => {
     const { option } = event.detail;
-    console.info('Selected scope', option.value);
-    analytics.track('scope:selected', option);
+    console.info('Selected item', option.value);
+    analytics.track('item:selected', option);
 });</code></pre>
             <h4>Best Practices</h4>
             <ul>
@@ -646,7 +636,7 @@ persistTheme(localStorage.getItem(THEME_KEY) ?? 'light');</code></pre>
             <h4>Typical Handler</h4>
 <pre><code>grid.addEventListener('ck-multiselect-option-unselected', event => {
     const { option } = event.detail;
-    revokeScope(option.value);
+    revokeItem(option.value);
 });</code></pre>
             <h4>Best Practices</h4>
             <ul>
@@ -698,7 +688,7 @@ persistTheme(localStorage.getItem(THEME_KEY) ?? 'light');</code></pre>
 &lt;ck-multiselect-grid selectedItems="['a','b']"&gt;&lt;/ck-multiselect-grid&gt;
 
 // Correct
-grid.setAttribute('selectedItems', JSON.stringify(['Scope.Read']));</code></pre>
+grid.setAttribute('selectedItems', JSON.stringify(['Item.Read']));</code></pre>
 
             <h4>Events not firing?</h4>
             <p><strong>Problem:</strong> Listeners attached before the component upgrades may miss early events.</p>

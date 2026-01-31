@@ -13,6 +13,7 @@
 - Falls back to injecting a `<style>` tag into the shadow root when constructable stylesheets are not supported.
 - Story-3 refresh introduces responsive `.multiselect-grid` columns (200–240px), single-column mobile layout, `prefers-contrast` overrides, and print-friendly blocks.
 - Interactive states depend on CSS custom properties (`--input-border`, `--card-bg`, `--surface-bg`, `--primary-color`, `--focus-border`, `--focus-shadow`, `--option-pill-color`, `--option-pill-active-bg`, `--text-light`, `--form-bg`) so hosts can theme without editing the bundled CSS.
+- Each property above now carries a fallback value baked into the stylesheet (`#d0d5dd` borders, `#ffffff` cards, `#eef2ff` hover surfaces, `#4338ca` primary/focus, etc.) so environments that do not define the tokens still show distinct checked states.
 - `.multiselect-option:has(.multiselect-input:checked)` is used for concise selection styling; browsers lacking `:has()` still show the default state, so documentation notes progressive enhancement expectations.
 
 ## Lifecycle
@@ -32,6 +33,9 @@
 - `selectedItems` accepts a JSON array of strings that should match the option `value` entries; they feed a `Set` for quick lookup when rendering.
 - `buildSelectedOnlyOptions()` walks the selected list and synthesizes `MultiselectOption`s for any values not already represented so persisted selections survive when the available list is filtered by the host application.
 - A `WeakMap<HTMLInputElement, MultiselectOption>` tracks option metadata for each checkbox; `handleInputChange()` listens for `change` events and dispatches bubbled/composed custom events (`ck-multiselect-option-selected` / `...-unselected`) with `{ option, checked }` detail so hosts never reach into the shadow DOM.
+- `handlePillClick()` attaches to each `.multiselect-pill` via a `data-checkbox-id` attribute so pointer clicks on the pill surface toggle the hidden checkbox even when the label default action is unavailable.
+- `syncCheckboxCheckedAttribute()` mirrors the checkbox's `checked` property onto the DOM attribute on every change event, keeping attribute selectors, tests, and host integrations aligned.
+- A companion `WeakMap<HTMLInputElement, HTMLDivElement>` lets the component toggle each `.multiselect-option`'s `data-selected="true|false"` attribute and `is-selected` class, which the stylesheet uses (alongside `:has`) so selection styling works even in browsers missing `:has()` support.
 - Parsing happens inside a small helper that catches `JSON.parse` errors, logs a warning for debugging, and falls back to an empty array to avoid throwing inside lifecycle hooks.
 - `slugify` keeps backwards-compatible id generation (lowercase + whitespace → hyphen) and a resolver guarantees uniqueness within a render.
 

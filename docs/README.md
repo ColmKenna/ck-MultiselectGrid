@@ -30,6 +30,29 @@
 - `ck-multiselect-option-selected` — bubbles + composed, fired when a checkbox becomes checked. `event.detail` includes `{ option, checked: true }`.
 - `ck-multiselect-option-unselected` — bubbles + composed, fired when a checkbox becomes unchecked. `event.detail` includes `{ option, checked: false }`.
 
+### Interaction Notes
+
+- Users can click the pill surface (the visible tag inside each option) to toggle the underlying checkbox; the component forwards those clicks and emits the same select/unselect events.
+- The checkbox `checked` attribute is updated in lock-step with the property so attribute selectors (and test assertions) always reflect the live state.
+- Each `.multiselect-option` exposes both `data-selected="true|false"` and an `is-selected` class so themes (and older browsers without `:has`) can style selected rows without inspecting the shadow DOM.
+
+#### Default palette
+
+All styling tokens include fallback values so the component renders with a neutral palette even if you never override them:
+
+| Custom Property | Default |
+|-----------------|---------|
+| `--input-border` | `#d0d5dd` |
+| `--card-bg` | `#ffffff` |
+| `--surface-bg` | `#eef2ff` |
+| `--primary-color` | `#4338ca` |
+| `--focus-border` | `#4338ca` |
+| `--focus-shadow` | `0 0 0 3px rgba(67, 56, 202, 0.25)` |
+| `--option-pill-color` | `#0f172a` |
+| `--option-pill-active-bg` | `#4338ca` |
+| `--text-light` | `#ffffff` |
+| `--form-bg` | `#e2e8f0` |
+
 ## Styling
 
 The Story-3 refresh ships a responsive checkbox grid: `.multiselect-grid` auto-fills columns (200–240px) above mobile, collapses to a single column below 576px, and respects a print-friendly block layout. Interactive states rely on CSS custom properties so host applications can theme the options without rewriting the stylesheet.
