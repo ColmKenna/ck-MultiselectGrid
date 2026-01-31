@@ -30,7 +30,7 @@ npm install @colmkenna/ck-webcomponents
 ### Via CDN (if published to a CDN)
 
 ```html
-<script src="https://unpkg.com/@colmkenna/ck-webcomponents@latest/dist/hello-world/hello-world.min.js"></script>
+<script src="https://unpkg.com/@colmkenna/ck-webcomponents@latest/dist/ck-multiselect-grid/ck-multiselect-grid.min.js"></script>
 ```
 
 Then import in your JavaScript:
@@ -42,41 +42,42 @@ import '@colmkenna/ck-webcomponents';
 Or import specific components:
 
 ```javascript
-import { HelloWorld } from '@colmkenna/ck-webcomponents';
+import { CkMultiselectGrid } from '@colmkenna/ck-webcomponents';
 ```
 
 ## 🧩 Components
 
-### HelloWorld Component
+### CkMultiselectGrid Component
 
-A simple greeting component with customizable name and color.
+A small form header block that renders a label and helper text.
 
 ```html
 <!-- Basic usage -->
-<hello-world></hello-world>
+<ck-multiselect-grid></ck-multiselect-grid>
 
-<!-- With custom name -->
-<hello-world name="Developer"></hello-world>
-
-<!-- With custom name and color -->
-<hello-world name="Developer" color="#ff6b6b"></hello-world>
+<!-- With custom title + helper text -->
+<ck-multiselect-grid
+  title="Select Resource Scopes"
+  description="Choose which resource scopes this client is allowed to request."
+></ck-multiselect-grid>
 ```
 
 #### Attributes
 
 | Attribute | Type   | Default | Description                    |
 |-----------|--------|---------|--------------------------------|
-| `name`    | string | "World" | The name to display in the greeting |
-| `color`   | string | "#333"  | Text color for the message     |
+| `title` | string | "Select Resource Scopes" | Label text |
+| `description` | string | "Choose which resource scopes this client is allowed to request." | Helper text (preferred) |
+| `discription` | string | "Choose which resource scopes this client is allowed to request." | Helper text (legacy spelling; `description` wins if both exist) |
 
 #### Properties
 
 The component also supports JavaScript property access:
 
 ```javascript
-const helloWorld = document.querySelector('hello-world');
-helloWorld.name = 'New Name';
-helloWorld.color = '#blue';
+const multiselectGrid = document.querySelector('ck-multiselect-grid');
+multiselectGrid.title = 'Select Resource Scopes';
+multiselectGrid.description = 'Choose which resource scopes this client is allowed to request.';
 ```
 
 ## 🛠️ Development
@@ -90,8 +91,8 @@ helloWorld.color = '#blue';
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ColmKenna/ckWebComponents.git
-cd ckWebComponents
+git clone https://github.com/ColmKenna/ck-MultiselectGrid.git
+cd ck-MultiselectGrid
 ```
 
 2. Install dependencies:
@@ -122,16 +123,16 @@ npm run serve
 webcomponent-library/
 ├── src/
 │   ├── components/
-│   │   └── hello-world/
-│   │       └── hello.world.ts
+│   │   └── ck-multiselect-grid/
+│   │       └── ck-multiselect-grid.ts
 │   └── index.ts
 ├── dist/
 │   ├── index.html (demo page)
-│   ├── hello-world/
-│   │   ├── hello-world.js (UMD build)
-│   │   ├── hello-world.esm.js (ES module build)
-│   │   └── hello-world.min.js (minified UMD build)
-│   └── index.d.ts (TypeScript definitions)
+│   ├── ck-multiselect-grid/
+│   │   ├── ck-multiselect-grid.js (UMD build)
+│   │   ├── ck-multiselect-grid.esm.js (ES module build)
+│   │   └── ck-multiselect-grid.min.js (minified UMD build)
+│   └── ck-multiselect-grid/index.d.ts (TypeScript definitions)
 ├── package.json
 ├── rollup.config.js
 ├── tsconfig.json
@@ -296,7 +297,7 @@ After installing, you can use the components in your HTML:
     </script>
 </head>
 <body>
-    <hello-world name="GitHub Packages"></hello-world>
+  <ck-multiselect-grid name="GitHub Packages"></ck-multiselect-grid>
 </body>
 </html>
 ```

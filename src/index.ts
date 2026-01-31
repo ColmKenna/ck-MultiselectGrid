@@ -1,5 +1,5 @@
 // Export all components
-export { HelloWorld } from './components/hello-world/hello.world';
+export { CkMultiselectGrid } from './components/ck-multiselect-grid/ck-multiselect-grid';
 
 // Auto-register all components
-import './components/hello-world/hello.world';
+import './components/ck-multiselect-grid/ck-multiselect-grid';

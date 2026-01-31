@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ck-multiselect-grid demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 2rem;
+      }
+      .demo-row {
+        display: grid;
+        gap: 1rem;
+        max-width: 720px;
+      }
+      input {
+        width: 100%;
+        padding: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ck-multiselect-grid demo</h1>
+
+    <div class="demo-row">
+      <ck-multiselect-grid
+        id="grid"
+        title="Select Resource Scopes"
+        description="Choose which resource scopes this client is allowed to request."
+      ></ck-multiselect-grid>
+
+      <label>
+        Title
+        <input id="title" value="Select Resource Scopes" />
+      </label>
+
+      <label>
+        Description
+        <input
+          id="description"
+          value="Choose which resource scopes this client is allowed to request."
+        />
+      </label>
+    </div>
+
+    <script type="module">
+      // Requires a build output (run `npm run build` first)
+      import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
+
+      const grid = document.getElementById('grid');
+      const titleInput = document.getElementById('title');
+      const descriptionInput = document.getElementById('description');
+
+      const sync = () => {
+        grid.setAttribute('title', titleInput.value);
+        grid.setAttribute('description', descriptionInput.value);
+      };
+
+      titleInput.addEventListener('input', sync);
+      descriptionInput.addEventListener('input', sync);
+    </script>
+  </body>
+</html>
