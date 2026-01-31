@@ -26,6 +26,36 @@
  - `title`, `description`
  - `fieldset-id`, `fieldset-class` for fieldset metadata
  - `availableitems`, `selecteditems` (lower-cased per Custom Elements spec) to keep the checkbox grid in sync
+ - `name` for form association
+
+## Form Association
+
+The component implements the **form-associated custom element** pattern:
+
+### Implementation
+
+- **`static formAssociated = true`**: Declares form participation to the browser.
+- **`ElementInternals`**: Obtained via `this.attachInternals()` in the constructor.
+- **`internals.setFormValue(jsonValue, state)`**: Called whenever selections change; the first argument is the submission value, the second is the restorable state.
+- **Value format**: Selections are serialized as a JSON array string (e.g., `'["alpha","beta"]'`).
+
+### Lifecycle Callbacks
+
+- **`formAssociatedCallback(form)`**: Called when the element is associated/disassociated with a form. Currently a no-op.
+- **`formResetCallback()`**: Called when `form.reset()` is invoked. Restores the initial `selectedItems` captured at `connectedCallback`.
+- **`formDisabledCallback(disabled)`**: Called when the element's disabled state changes (e.g., inside a `<fieldset disabled>`). Propagates to all internal checkboxes.
+- **`formStateRestoreCallback(state, mode)`**: Called during back/forward navigation or autofill. Parses the JSON state and restores checkbox selections.
+
+### State Tracking
+
+- **`initialSelectedValues`**: Captured at `connectedCallback` to enable form reset.
+- **`currentSelectedValues`**: Updated on every checkbox change; used for `setFormValue` and the `value` property.
+
+### Properties
+
+- **`value` (get/set)**: Returns or sets the current selections as `string[]`. Setting triggers checkbox updates and `setFormValue`.
+- **`form` (get)**: Delegates to `internals.form` to return the associated form.
+- **`name` (get/set)**: Reflects the `name` attribute.
 
 ## Option Data
 

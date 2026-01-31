@@ -5,6 +5,7 @@
 - **Custom element tag:** `ck-multiselect-grid`
 - **Class:** `CkMultiselectGrid`
 - **Shadow DOM:** Open
+- **Form-associated:** Yes (`static formAssociated = true`)
 - **Styles:** Constructable stylesheets when supported, otherwise a `<style data-ck-multiselect-grid-fallback>` fallback.
 
 ## Rendered Markup
@@ -76,6 +77,32 @@ The component renders the following structure inside its shadow root:
 - **Default:** `[]`
 - **Purpose:** Values that should render as checked. Each entry must match an option's `value`; if a listed value is missing from `availableItems`, the component synthesizes a checkbox row using that value for the `label`, `name`, and `value` fields so the selection still appears.
 
+### `name`
+
+- **Type:** string
+- **Default:** none
+- **Purpose:** Identifies the component in FormData when submitted as part of a form. Required for form participation.
+
+## Properties
+
+### `value`
+
+- **Type:** `string[]`
+- **Read/Write:** Both
+- **Purpose:** Gets or sets the currently selected values. Setting this property updates the checkboxes and form value.
+
+### `form`
+
+- **Type:** `HTMLFormElement | null`
+- **Read-only:** Yes
+- **Purpose:** Returns the associated form element, if any.
+
+### `name`
+
+- **Type:** `string | null`
+- **Read/Write:** Both
+- **Purpose:** Reflects the `name` attribute.
+
 ## Behavior
 
 - DOM is created once during `connectedCallback()`; subsequent updates only touch existing nodes.
@@ -89,6 +116,18 @@ The component renders the following structure inside its shadow root:
 - Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="ck-multiselect-grid-label"` for assistive context.
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
+
+## Form Association
+
+The component is a **form-associated custom element** using `ElementInternals`:
+
+- **`static formAssociated = true`**: Declares the component participates in forms.
+- **`attachInternals()`**: Called in constructor to obtain `ElementInternals`.
+- **`setFormValue()`**: Called whenever selections change to update the form value.
+- **FormData inclusion**: When inside a `<form>`, the component's value (JSON array of selected values) is included in FormData under the `name` attribute.
+- **Form reset**: Implements `formResetCallback()` to restore initial selections when `form.reset()` is called.
+- **Disabled state**: Implements `formDisabledCallback(disabled)` to disable/enable all checkboxes when the form or fieldset is disabled.
+- **State restoration**: Implements `formStateRestoreCallback(state, mode)` to restore selections on back/forward navigation.
 
 ## Events
 

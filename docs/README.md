@@ -20,10 +20,49 @@
 ></ck-multiselect-grid>
 ```
 
+### Form Integration
+
+The component is **form-associated** and participates in native form submission:
+
+```html
+<form id="myForm">
+  <ck-multiselect-grid
+    name="permissions"
+    title="Permissions"
+    availableItems='["read","write","delete"]'
+    selectedItems='["read"]'
+  ></ck-multiselect-grid>
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+document.getElementById('myForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  // formData.get('permissions') returns '["read"]' (JSON string)
+  console.log('Selected:', JSON.parse(formData.get('permissions')));
+});
+</script>
+```
+
+#### Form Features
+
+- **FormData inclusion**: Selected values are serialized as a JSON array under the `name` attribute
+- **Form reset**: `form.reset()` restores initial selections
+- **Disabled state**: Respects `<fieldset disabled>` and form-level disabled states
+- **Programmatic access**: Use `element.value` to get/set selections, `element.form` to access the associated form
+
 ### Attributes
 
+- `name` — the form field name used in FormData serialization (required for form participation)
 - `availableItems` — JSON array of strings or option objects (`{ id?, name?, label?, value? }`) used to build the checkbox list
 - `selectedItems` — JSON array of strings matching option `value` entries that should be checked; if a value is absent from `availableItems`, the component synthesizes a matching checkbox row so persisted selections never disappear
+
+### Properties
+
+- `value` — get/set the currently selected values as a `string[]`
+- `form` — read-only reference to the associated `<form>` element
+- `name` — reflects the `name` attribute
 
 ### Events
 

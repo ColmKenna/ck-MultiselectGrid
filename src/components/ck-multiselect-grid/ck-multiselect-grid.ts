@@ -16,8 +16,15 @@ type MultiselectOption = {
 };
 
 export class CkMultiselectGrid extends HTMLElement {
+  // Form-associated custom element marker
+  static formAssociated = true;
+
   private shadow: ShadowRoot;
   private initialized = false;
+  private internals: ElementInternals;
+  private initialSelectedValues: string[] = [];
+  private currentSelectedValues: string[] = [];
+  private isDisabled = false;
 
   private inputOptionMap = new WeakMap<HTMLInputElement, MultiselectOption>();
   private inputContainerMap = new WeakMap<HTMLInputElement, HTMLDivElement>();
@@ -35,6 +42,19 @@ export class CkMultiselectGrid extends HTMLElement {
     const isSelected = target.checked;
     this.syncCheckboxCheckedAttribute(target);
     this.updateOptionSelectionState(target);
+
+    // Update current selected values for form integration
+    if (isSelected) {
+      if (!this.currentSelectedValues.includes(option.value)) {
+        this.currentSelectedValues.push(option.value);
+      }
+    } else {
+      this.currentSelectedValues = this.currentSelectedValues.filter(
+        v => v !== option.value
+      );
+    }
+    this.updateFormValue();
+
     const eventName = isSelected
       ? 'ck-multiselect-option-selected'
       : 'ck-multiselect-option-unselected';
@@ -60,6 +80,7 @@ export class CkMultiselectGrid extends HTMLElement {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: 'open' });
+    this.internals = this.attachInternals();
 
     // Adopt the constructable stylesheet when supported. We do this once per instance
     // but the underlying sheet was created once at module load time.
@@ -85,12 +106,17 @@ export class CkMultiselectGrid extends HTMLElement {
       'fieldset-class',
       'availableitems',
       'selecteditems',
+      'name',
     ];
   }
 
   connectedCallback() {
     this.ensureInitialized();
+    // Capture initial selected values for form reset
+    this.initialSelectedValues = [...this.getSelectedValues()];
+    this.currentSelectedValues = [...this.initialSelectedValues];
     this.render();
+    this.updateFormValue();
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -116,6 +142,101 @@ export class CkMultiselectGrid extends HTMLElement {
 
   set description(value: string) {
     this.setAttribute('description', value);
+  }
+
+  // Form-associated: name property for FormData key
+  get name(): string | null {
+    return this.getAttribute('name');
+  }
+
+  set name(value: string) {
+    this.setAttribute('name', value);
+  }
+
+  // Form-associated: value property reflecting current selections
+  get value(): string[] {
+    return [...this.currentSelectedValues];
+  }
+
+  set value(newValues: string[]) {
+    this.currentSelectedValues = [...newValues];
+    this.updateFormValue();
+    this.syncCheckboxesToCurrentValues();
+  }
+
+  // Form-associated: expose the associated form
+  get form(): HTMLFormElement | null {
+    return this.internals.form;
+  }
+
+  // Form-associated lifecycle callback: called when element is added/removed from form
+  formAssociatedCallback() {
+    // No special action needed; internals handle form association
+  }
+
+  // Form-associated lifecycle callback: called when form is reset
+  formResetCallback() {
+    this.currentSelectedValues = [...this.initialSelectedValues];
+    this.updateFormValue();
+    this.syncCheckboxesToCurrentValues();
+  }
+
+  // Form-associated lifecycle callback: called when disabled state changes
+  formDisabledCallback(disabled: boolean) {
+    this.isDisabled = disabled;
+    this.syncDisabledState();
+  }
+
+  // Form-associated lifecycle callback: called when form state is restored (e.g., back/forward navigation)
+  formStateRestoreCallback(state: string) {
+    if (state) {
+      try {
+        const values = JSON.parse(state);
+        if (Array.isArray(values)) {
+          this.currentSelectedValues = values;
+          this.updateFormValue();
+          this.syncCheckboxesToCurrentValues();
+        }
+      } catch {
+        // Ignore invalid state
+      }
+    }
+  }
+
+  private syncCheckboxesToCurrentValues() {
+    if (!this.multiselectGroup) return;
+    const selectedSet = new Set(this.currentSelectedValues);
+    const checkboxes = this.multiselectGroup.querySelectorAll(
+      'input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
+
+    checkboxes.forEach(checkbox => {
+      const shouldBeChecked = selectedSet.has(checkbox.value);
+      checkbox.checked = shouldBeChecked;
+      this.syncCheckboxCheckedAttribute(checkbox);
+      this.updateOptionSelectionState(checkbox);
+    });
+  }
+
+  private syncDisabledState() {
+    if (!this.multiselectGroup) return;
+    const checkboxes = this.multiselectGroup.querySelectorAll(
+      'input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
+
+    checkboxes.forEach(checkbox => {
+      checkbox.disabled = this.isDisabled;
+    });
+  }
+
+  private updateFormValue() {
+    const name = this.name;
+    if (name) {
+      const jsonValue = JSON.stringify(this.currentSelectedValues);
+      this.internals.setFormValue(jsonValue, jsonValue);
+    } else {
+      this.internals.setFormValue(null);
+    }
   }
 
   private ensureInitialized() {

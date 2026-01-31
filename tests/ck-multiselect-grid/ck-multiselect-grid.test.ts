@@ -411,3 +411,160 @@ describe('CkMultiselectGrid styles', () => {
     );
   });
 });
+
+describe('CkMultiselectGrid form-associated behavior', () => {
+  let element: CkMultiselectGrid;
+  let form: HTMLFormElement;
+
+  beforeEach(() => {
+    form = document.createElement('form');
+    element = new CkMultiselectGrid();
+    element.setAttribute('name', 'test-selection');
+    form.appendChild(element);
+    document.body.appendChild(form);
+  });
+
+  afterEach(() => {
+    if (form.parentNode) {
+      form.parentNode.removeChild(form);
+    }
+  });
+
+  test('should declare static formAssociated = true', () => {
+    expect((CkMultiselectGrid as unknown as { formAssociated: boolean }).formAssociated).toBe(true);
+  });
+
+  test('should have name in observedAttributes', () => {
+    const observedAttributes = CkMultiselectGrid.observedAttributes;
+    expect(observedAttributes).toContain('name');
+  });
+
+  test('should expose name property that reflects attribute', () => {
+    element.setAttribute('name', 'my-grid');
+    expect(element.name).toBe('my-grid');
+
+    element.name = 'another-name';
+    expect(element.getAttribute('name')).toBe('another-name');
+  });
+
+  test('should include selected values in FormData on form submission', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta', 'gamma']));
+    element.setAttribute('selectedItems', JSON.stringify(['alpha', 'gamma']));
+    element.connectedCallback();
+
+    const formData = new FormData(form);
+    const value = formData.get('test-selection');
+
+    // Expect a JSON string of selected values
+    expect(value).toBe(JSON.stringify(['alpha', 'gamma']));
+  });
+
+  test('should update FormData when selections change', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.setAttribute('selectedItems', JSON.stringify([]));
+    element.connectedCallback();
+
+    // Initially empty
+    let formData = new FormData(form);
+    expect(formData.get('test-selection')).toBe(JSON.stringify([]));
+
+    // Select an option
+    const checkbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    expect(checkbox).toBeTruthy();
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    formData = new FormData(form);
+    expect(formData.get('test-selection')).toBe(JSON.stringify(['alpha']));
+  });
+
+  test('should restore initial selections on form reset', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.setAttribute('selectedItems', JSON.stringify(['alpha']));
+    element.connectedCallback();
+
+    // Verify initial state
+    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    const betaCheckbox = element.shadowRoot?.getElementById('beta') as HTMLInputElement;
+    expect(alphaCheckbox?.checked).toBe(true);
+    expect(betaCheckbox?.checked).toBe(false);
+
+    // Change selections
+    alphaCheckbox.checked = false;
+    alphaCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+    betaCheckbox.checked = true;
+    betaCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(alphaCheckbox?.checked).toBe(false);
+    expect(betaCheckbox?.checked).toBe(true);
+
+    // Reset the form
+    form.reset();
+
+    // Should restore initial state
+    expect(alphaCheckbox?.checked).toBe(true);
+    expect(betaCheckbox?.checked).toBe(false);
+  });
+
+  test('should return associated form via form property', () => {
+    element.connectedCallback();
+    expect(element.form).toBe(form);
+  });
+
+  test('should expose value property reflecting current selections', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.setAttribute('selectedItems', JSON.stringify(['beta']));
+    element.connectedCallback();
+
+    expect(element.value).toEqual(['beta']);
+
+    // Change selection
+    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    alphaCheckbox.checked = true;
+    alphaCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(element.value).toEqual(['beta', 'alpha']);
+  });
+
+  test('should set value property and update checkboxes', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta', 'gamma']));
+    element.setAttribute('selectedItems', JSON.stringify([]));
+    element.connectedCallback();
+
+    element.value = ['beta', 'gamma'];
+
+    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    const betaCheckbox = element.shadowRoot?.getElementById('beta') as HTMLInputElement;
+    const gammaCheckbox = element.shadowRoot?.getElementById('gamma') as HTMLInputElement;
+
+    expect(alphaCheckbox?.checked).toBe(false);
+    expect(betaCheckbox?.checked).toBe(true);
+    expect(gammaCheckbox?.checked).toBe(true);
+  });
+
+  test('should disable all checkboxes when formDisabledCallback(true) is called', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.connectedCallback();
+
+    // Simulate browser calling formDisabledCallback
+    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(true);
+
+    const checkboxes = element.shadowRoot?.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    checkboxes.forEach(cb => {
+      expect(cb.disabled).toBe(true);
+    });
+  });
+
+  test('should re-enable all checkboxes when formDisabledCallback(false) is called', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.connectedCallback();
+
+    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(true);
+    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(false);
+
+    const checkboxes = element.shadowRoot?.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    checkboxes.forEach(cb => {
+      expect(cb.disabled).toBe(false);
+    });
+  });
+});

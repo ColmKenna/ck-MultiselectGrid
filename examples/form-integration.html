@@ -160,6 +160,48 @@
     <h1>Form Integration</h1>
     <p>Use <code>&lt;ck-multiselect-grid&gt;</code> inside forms, track touched/dirty states, surface errors, and coordinate with other controls.</p>
 
+    <div class="example" id="native-form-associated">
+        <h3>Native Form Participation (FormData)</h3>
+        <p>The component is a <strong>form-associated custom element</strong>. Set the <code>name</code> attribute and it automatically appears in <code>FormData</code>.</p>
+        <div class="demo">
+            <form id="nativeForm">
+                <ck-multiselect-grid id="nativeGrid" name="selections"></ck-multiselect-grid>
+                <div class="toolbar" style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="primary" type="submit">Submit</button>
+                    <button class="secondary" type="reset">Reset</button>
+                </div>
+                <pre class="code" id="nativeFormOutput" style="margin-top:12px; font-size:0.85rem;">Click Submit to see FormData</pre>
+            </form>
+        </div>
+        <div class="note">
+            <strong>Key behaviors:</strong>
+            <ul style="margin:8px 0 0; padding-left:20px;">
+                <li><code>new FormData(form).get('selections')</code> returns a JSON array string of selected values.</li>
+                <li><code>form.reset()</code> restores the initial selections from when the component was connected.</li>
+                <li>The <code>value</code> property (getter/setter) allows programmatic access to current selections.</li>
+                <li>The <code>form</code> property returns the associated form element.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="example" id="disabled-fieldset">
+        <h3>Fieldset Disabled (Native)</h3>
+        <p>When the component is inside a <code>&lt;fieldset disabled&gt;</code>, all checkboxes become disabled via <code>formDisabledCallback</code>.</p>
+        <div class="demo">
+            <form id="fieldsetForm">
+                <fieldset id="nativeFieldset">
+                    <legend>Selections (toggle fieldset disabled)</legend>
+                    <ck-multiselect-grid id="fieldsetGrid" name="fieldsetItems"></ck-multiselect-grid>
+                </fieldset>
+                <div class="toolbar" style="display:flex; gap:8px; margin-top:12px;">
+                    <button class="secondary" type="button" id="toggleFieldset">Disable Fieldset</button>
+                    <button class="primary" type="submit">Submit</button>
+                </div>
+                <pre class="code" id="fieldsetOutput" style="margin-top:12px; font-size:0.85rem;">Fieldset enabled</pre>
+            </form>
+        </div>
+    </div>
+
     <div class="example" id="basic-form">
         <h3>Basic Form</h3>
         <p>Serializes selections into a hidden input during submit.</p>
@@ -170,7 +212,7 @@
                 <p id="formOutput"></p>
             </form>
         </div>
-        <div class="note">The component lives outside the form&#39;s native serialization Item, so syncing to hidden inputs keeps submissions complete.</div>
+        <div class="note">This example uses a hidden input for backwards compatibility. See the <a href="#native-form-associated">Native Form Participation</a> section above for the modern approach using the <code>name</code> attribute.</div>
     </div>
 
     <div class="example" id="validation-states">
@@ -224,13 +266,13 @@
 
     <div class="example" id="form-reset">
         <h3>Form Reset</h3>
-        <p>Shows the difference between <code>form.reset()</code> and rehydrating <code>selectedItems</code>.</p>
+        <p>With the <code>name</code> attribute set, <code>form.reset()</code> now <strong>natively</strong> restores selections via <code>formResetCallback</code>. The manual approach below shows the legacy pattern.</p>
         <div class="demo">
             <form id="resetForm">
-                <ck-multiselect-grid id="resetGrid"></ck-multiselect-grid>
+                <ck-multiselect-grid id="resetGrid" name="resetSelections"></ck-multiselect-grid>
                 <div class="toolbar">
-                    <button class="secondary" type="reset">form.reset()</button>
-                    <button class="secondary" id="gridReset" type="button">grid.reset()</button>
+                    <button class="secondary" type="reset">form.reset() (native)</button>
+                    <button class="secondary" id="gridReset" type="button">setAttribute (legacy)</button>
                 </div>
                 <p id="resetState"></p>
             </form>
@@ -275,6 +317,58 @@
     <script type="module">
         import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
         import { optionsCatalog, setGridData, observeSelections, syncHiddenInput, snapshotState } from './shared-examples.js';
+
+        // Native form participation (FormData)
+        const nativeForm = document.querySelector('#nativeForm');
+        const nativeGrid = document.querySelector('#nativeGrid');
+        const nativeFormOutput = document.querySelector('#nativeFormOutput');
+        setGridData(nativeGrid, optionsCatalog.base.slice(0, 5), ['item.read', 'item.write']);
+
+        nativeForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const fd = new FormData(nativeForm);
+            const value = fd.get('selections');
+            nativeFormOutput.textContent = `FormData "selections": ${value}\nParsed: ${JSON.stringify(JSON.parse(value || '[]'), null, 2)}`;
+        });
+
+        nativeForm.addEventListener('reset', () => {
+            // Native reset restores initial selections
+            setTimeout(() => {
+                nativeFormOutput.textContent = 'Form reset! Selections restored to initial state.';
+            }, 0);
+        });
+
+        // Also log value property changes
+        nativeGrid.addEventListener('ck-multiselect-option-selected', () => {
+            nativeFormOutput.textContent = `Current value property: ${JSON.stringify(nativeGrid.value)}`;
+        });
+        nativeGrid.addEventListener('ck-multiselect-option-unselected', () => {
+            nativeFormOutput.textContent = `Current value property: ${JSON.stringify(nativeGrid.value)}`;
+        });
+
+        // Fieldset disabled demo
+        const fieldsetForm = document.querySelector('#fieldsetForm');
+        const nativeFieldset = document.querySelector('#nativeFieldset');
+        const fieldsetGrid = document.querySelector('#fieldsetGrid');
+        const fieldsetOutput = document.querySelector('#fieldsetOutput');
+        const toggleFieldset = document.querySelector('#toggleFieldset');
+        setGridData(fieldsetGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
+
+        toggleFieldset.addEventListener('click', () => {
+            const isDisabled = nativeFieldset.disabled;
+            nativeFieldset.disabled = !isDisabled;
+            toggleFieldset.textContent = nativeFieldset.disabled ? 'Enable Fieldset' : 'Disable Fieldset';
+            fieldsetOutput.textContent = nativeFieldset.disabled
+                ? 'Fieldset disabled - checkboxes should be disabled via formDisabledCallback'
+                : 'Fieldset enabled - checkboxes interactive';
+        });
+
+        fieldsetForm.addEventListener('submit', event => {
+            event.preventDefault();
+            const fd = new FormData(fieldsetForm);
+            const value = fd.get('fieldsetItems');
+            fieldsetOutput.textContent = `Submitted: ${value || '(no value - element disabled)'}`;
+        });
 
         // Basic form
         const ItemForm = document.querySelector('#ItemForm');
@@ -399,11 +493,14 @@
         setGridData(resetGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
         const defaultSelections = ['item.read'];
         resetForm.addEventListener('reset', () => {
-            resetState.textContent = 'form.reset() fired - component retains selections until re-render.';
+            // Native formResetCallback now handles this
+            setTimeout(() => {
+                resetState.textContent = `form.reset() triggered formResetCallback - selections restored: ${JSON.stringify(resetGrid.value)}`;
+            }, 0);
         });
         document.querySelector('#gridReset').addEventListener('click', () => {
             resetGrid.setAttribute('selectedItems', JSON.stringify(defaultSelections));
-            resetState.textContent = 'grid.setAttribute(...) reapplied baseline selections.';
+            resetState.textContent = 'grid.setAttribute(...) reapplied baseline selections (legacy pattern).';
         });
 
         // Required vs optional
