@@ -245,6 +245,50 @@ describe('CkMultiselectGrid Component', () => {
     expect(updatedOptions?.length).toBe(2);
   });
 
+  test('should emit a custom event when an option becomes selected', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Scope.Read']));
+    element.connectedCallback();
+
+    const handler = jest.fn();
+    element.addEventListener('ck-multiselect-option-selected', handler);
+
+    const checkbox = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    expect(checkbox).toBeTruthy();
+
+    if (!checkbox) return;
+
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    const eventDetail = handler.mock.calls[0][0].detail;
+    expect(eventDetail.option.value).toBe('Scope.Read');
+    expect(eventDetail.option.label).toBe('Scope.Read');
+    expect(eventDetail.checked).toBe(true);
+  });
+
+  test('should emit a custom event when an option becomes unselected', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Scope.Write']));
+    element.setAttribute('selectedItems', JSON.stringify(['Scope.Write']));
+    element.connectedCallback();
+
+    const handler = jest.fn();
+    element.addEventListener('ck-multiselect-option-unselected', handler);
+
+    const checkbox = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    expect(checkbox).toBeTruthy();
+
+    if (!checkbox) return;
+
+    checkbox.checked = false;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+    const eventDetail = handler.mock.calls[0][0].detail;
+    expect(eventDetail.option.value).toBe('Scope.Write');
+    expect(eventDetail.checked).toBe(false);
+  });
+
   test('should not duplicate DOM when reconnected', () => {
     element.connectedCallback();
     document.body.removeChild(element);

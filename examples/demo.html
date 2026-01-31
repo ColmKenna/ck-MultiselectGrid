@@ -89,6 +89,11 @@
         Selected Items (JSON array)
         <textarea id="selected-items">["Scope.Write","Scope.PolicyOnly"]</textarea>
       </label>
+
+      <div>
+        <strong>Event log</strong>
+        <pre id="event-log" style="min-height: 4rem; background: #0f172a; color: #f8fafc; padding: 0.5rem; border-radius: 0.25rem; overflow: auto;"></pre>
+      </div>
     </div>
 
     <script type="module">
@@ -96,6 +101,7 @@
       import '../dist/ck-multiselect-grid/ck-multiselect-grid.esm.js';
 
       const grid = document.getElementById('grid');
+      const eventLog = document.getElementById('event-log');
       const titleInput = document.getElementById('title');
       const descriptionInput = document.getElementById('description');
       const fieldsetIdInput = document.getElementById('fieldset-id');
@@ -136,6 +142,15 @@
       fieldsetClassInput.addEventListener('input', sync);
       availableItemsInput.addEventListener('input', sync);
       selectedItemsInput.addEventListener('input', sync);
+
+      const logEvent = event => {
+        const { option, checked } = event.detail;
+        const nextLine = `${new Date().toLocaleTimeString()} → ${checked ? 'selected' : 'unselected'} ${option.value}`;
+        eventLog.textContent = `${nextLine}\n${eventLog.textContent}`.trim().slice(0, 800);
+      };
+
+      grid.addEventListener('ck-multiselect-option-selected', logEvent);
+      grid.addEventListener('ck-multiselect-option-unselected', logEvent);
     </script>
   </body>
 </html>

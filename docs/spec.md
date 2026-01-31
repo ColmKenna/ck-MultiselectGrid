@@ -93,6 +93,20 @@ The component renders the following structure inside its shadow root:
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
 
+## Events
+
+- `ck-multiselect-option-selected`
+  - **Fires when:** A checkbox transitions from unchecked → checked (user interaction).
+  - **Detail:** `{ option: { id, label, name, value }, checked: true }`
+  - **Bubbling/Composed:** `true`/`true` so listeners outside the shadow root can react.
+
+- `ck-multiselect-option-unselected`
+  - **Fires when:** A checkbox transitions from checked → unchecked.
+  - **Detail:** `{ option: { id, label, name, value }, checked: false }`
+  - **Bubbling/Composed:** `true`/`true`.
+
+Events are dispatched from the custom element, not the internal inputs, so hosts can simply listen on `<ck-multiselect-grid>`.
+
 ## Styling
 
 - `ckMultiselectGridCSS` delivers the Story-3 responsive layout: `.multiselect-grid` auto-fits 200–240px columns (depending on viewport), collapses to a single column under 576px, and switches to block layout with page-break guards when printing.

@@ -14,6 +14,35 @@ export class CkMultiselectGrid extends HTMLElement {
   private shadow: ShadowRoot;
   private initialized = false;
 
+  private inputOptionMap = new WeakMap<HTMLInputElement, MultiselectOption>();
+  private handleInputChange = (event: Event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || target.type !== 'checkbox') {
+      return;
+    }
+
+    const option = this.inputOptionMap.get(target);
+    if (!option) {
+      return;
+    }
+
+    const isSelected = target.checked;
+    const eventName = isSelected
+      ? 'ck-multiselect-option-selected'
+      : 'ck-multiselect-option-unselected';
+
+    this.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: {
+          option: { ...option },
+          checked: isSelected,
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
+  };
+
   private container!: HTMLDivElement;
   private fieldset!: HTMLFieldSetElement;
   private titleLabel!: HTMLDivElement;
@@ -212,6 +241,8 @@ export class CkMultiselectGrid extends HTMLElement {
     checkbox.name = option.name;
     checkbox.value = option.value;
     checkbox.setAttribute('aria-describedby', `${option.id}-desc`);
+    this.inputOptionMap.set(checkbox, option);
+    checkbox.addEventListener('change', this.handleInputChange);
     if (isSelected) {
       checkbox.checked = true;
       checkbox.setAttribute('checked', 'checked');

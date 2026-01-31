@@ -86,6 +86,21 @@ An accessible multiselect grid that combines a configurable `<fieldset>` header 
 | `availableItems` | JSON array | `[]` | Array of strings or objects (`{ id?, name?, label?, value? }`) describing each checkbox option |
 | `selectedItems` | JSON array | `[]` | Array of strings referencing the option `value` entries that should render as checked; values missing from `availableItems` are synthesized into the grid so persisted selections still display |
 
+#### Events
+
+| Event | Description | Detail Payload |
+|-------|-------------|----------------|
+| `ck-multiselect-option-selected` | Fired whenever a checkbox transitions to the checked state (user interaction). | `{ option: { id, label, name, value }, checked: true }`
+| `ck-multiselect-option-unselected` | Fired whenever a checkbox transitions to the unchecked state. | `{ option: { id, label, name, value }, checked: false }`
+
+Both events bubble and are composed, so you can listen on the custom element from outside the shadow DOM:
+
+```javascript
+grid.addEventListener('ck-multiselect-option-selected', event => {
+  console.log('selected', event.detail.option.value);
+});
+```
+
 #### Properties
 
 The component also supports JavaScript property access:
