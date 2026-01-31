@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -42,52 +42,52 @@
     <h1>ck-multiselect-grid demo</h1>
     <p>
       Tip: Values listed in <code>selectedItems</code> are rendered even if they are missing
-      from <code>availableItems</code>. Try removing "Scope.PolicyOnly" from the available list and
+      from <code>availableItems</code>. Try removing "Item.PolicyOnly" from the available list and
       notice the pill stays visible.
     </p>
 
     <div class="demo-row">
       <ck-multiselect-grid
         id="grid"
-        title="Select Resource Scopes"
-        description="Choose which resource scopes this client is allowed to request."
-        fieldset-id="scopes-fieldset"
-        fieldset-class="scope-block"
-        availableItems='["Scope.Read","Scope.Write","Scope.Manage"]'
-        selectedItems='["Scope.Write","Scope.PolicyOnly"]'
+        title="Select Items"
+        description="Choose the items that apply to this client."
+        fieldset-id="ck-multiselect-grid-fieldset"
+        fieldset-class="selection-block"
+        availableItems='["Item.Read","Item.Write","Item.Manage"]'
+        selectedItems='["Item.Write","Item.PolicyOnly"]'
       ></ck-multiselect-grid>
 
       <label>
         Title
-        <input id="title" value="Select Resource Scopes" />
+        <input id="title" value="Select Items" />
       </label>
 
       <label>
         Description
         <input
           id="description"
-          value="Choose which resource scopes this client is allowed to request."
+          value="Choose the items that apply to this client."
         />
       </label>
 
       <label>
         Fieldset ID
-        <input id="fieldset-id" value="scopes-fieldset" />
+        <input id="fieldset-id" value="ck-multiselect-grid-fieldset" />
       </label>
 
       <label>
         Fieldset Classes (space-delimited)
-        <input id="fieldset-class" value="scope-block" />
+        <input id="fieldset-class" value="selection-block" />
       </label>
 
       <label>
         Available Items (JSON array)
-        <textarea id="available-items">["Scope.Read","Scope.Write","Scope.Manage"]</textarea>
+        <textarea id="available-items">["Item.Read","Item.Write","Item.Manage"]</textarea>
       </label>
 
       <label>
         Selected Items (JSON array)
-        <textarea id="selected-items">["Scope.Write","Scope.PolicyOnly"]</textarea>
+        <textarea id="selected-items">["Item.Write","Item.PolicyOnly"]</textarea>
       </label>
 
       <div>
@@ -112,7 +112,10 @@
       const sync = () => {
         grid.setAttribute('title', titleInput.value);
         grid.setAttribute('description', descriptionInput.value);
-        grid.setAttribute('fieldset-id', fieldsetIdInput.value || 'scopes-fieldset');
+        grid.setAttribute(
+          'fieldset-id',
+          fieldsetIdInput.value || 'ck-multiselect-grid-fieldset'
+        );
 
         const nextClass = fieldsetClassInput.value.trim();
         if (nextClass) {
@@ -145,7 +148,7 @@
 
       const logEvent = event => {
         const { option, checked } = event.detail;
-        const nextLine = `${new Date().toLocaleTimeString()} → ${checked ? 'selected' : 'unselected'} ${option.value}`;
+        const nextLine = `${new Date().toLocaleTimeString()} -> ${checked ? 'selected' : 'unselected'} ${option.value}`;
         eventLog.textContent = `${nextLine}\n${eventLog.textContent}`.trim().slice(0, 800);
       };
 
@@ -154,3 +157,4 @@
     </script>
   </body>
 </html>
+

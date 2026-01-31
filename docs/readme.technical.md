@@ -22,7 +22,7 @@
 
 ## Observed Attributes
 
- - `title`, `description`, `discription` (legacy spelling)
+ - `title`, `description`
  - `fieldset-id`, `fieldset-class` for fieldset metadata
  - `availableitems`, `selecteditems` (lower-cased per Custom Elements spec) to keep the checkbox grid in sync
 
@@ -35,11 +35,9 @@
 - Parsing happens inside a small helper that catches `JSON.parse` errors, logs a warning for debugging, and falls back to an empty array to avoid throwing inside lifecycle hooks.
 - `slugify` keeps backwards-compatible id generation (lowercase + whitespace → hyphen) and a resolver guarantees uniqueness within a render.
 
-## Attribute Precedence
+## Helper Text Handling
 
-- If both `description` and `discription` are present, `description` wins.
+- `description` is the only helper-text attribute; the former typo-driven alias has been removed to keep the API surface consistent.
 
-## Fieldset Metadata
-
-- `fieldset-id` reflects onto the `<fieldset>` `id`, defaulting to `scopes-fieldset` for predictable referencing.
+- `fieldset-id` reflects onto the `<fieldset>` `id`, defaulting to `ck-multiselect-grid-fieldset` for predictable referencing.
 - `fieldset-class` accepts space-delimited tokens that are appended to the required `multiselect-fieldset` class, enabling theming hooks.

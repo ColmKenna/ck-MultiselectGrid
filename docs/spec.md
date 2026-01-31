@@ -18,7 +18,7 @@ The component renders the following structure inside its shadow root:
       <div class="form-label">{title}</div>
       <div class="form-text">{description}</div>
     </div>
-    <div class="multiselect-grid" role="group" aria-labelledby="scopes-label">
+    <div class="multiselect-grid" role="group" aria-labelledby="ck-multiselect-grid-label">
       <div class="multiselect-option" * n="availableItems.length">
         <input
           class="multiselect-input"
@@ -43,25 +43,19 @@ The component renders the following structure inside its shadow root:
 ### `title`
 
 - **Type:** string
-- **Default:** `Select Resource Scopes`
+- **Default:** `Select Items`
 - **Purpose:** Controls the label text.
 
 ### `description`
 
 - **Type:** string
-- **Default:** `Choose which resource scopes this client is allowed to request.`
-- **Purpose:** Preferred helper text attribute. If both helper attributes exist, this one wins.
-
-### `discription`
-
-- **Type:** string
-- **Default:** `Choose which resource scopes this client is allowed to request.`
-- **Purpose:** Legacy helper text attribute kept for backwards compatibility.
+- **Default:** `Choose the items that apply to this client.`
+- **Purpose:** Helper text rendered under the label.
 
 ### `fieldset-id`
 
 - **Type:** string
-- **Default:** `scopes-fieldset`
+- **Default:** `ck-multiselect-grid-fieldset`
 - **Purpose:** Applies the `id` of the `<fieldset>` that wraps the `.form-group`.
 
 ### `fieldset-class`
@@ -85,11 +79,11 @@ The component renders the following structure inside its shadow root:
 ## Behavior
 
 - DOM is created once during `connectedCallback()`; subsequent updates only touch existing nodes.
-- Helper text uses `description` if available, otherwise falls back to `discription` or the default copy.
+- Helper text uses `description` when provided, otherwise falls back to the default copy.
 - Fieldset metadata (`id`, classes) updates whenever `fieldset-id` or `fieldset-class` mutates.
 - Available/selected item arrays are parsed from JSON (strings or objects) and drive the checkbox grid; attribute mutations trigger a re-render so the grid stays in sync.
 - Selected values missing from the available list are converted into synthetic options appended to the grid using the trimmed string as the pill text and checkbox metadata, ensuring persisted selections remain visible even when their source data is temporarily unavailable.
-- Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="scopes-label"` for assistive context.
+- Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="ck-multiselect-grid-label"` for assistive context.
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
 

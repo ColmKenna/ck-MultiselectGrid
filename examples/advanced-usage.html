@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Advanced Usage – ck-multiselect-grid</title>
+    <title>Advanced Usage - ck-multiselect-grid</title>
     <style>
         body {
             font-family: "General Sans", "Space Grotesk", system-ui, sans-serif;
@@ -96,7 +96,7 @@
     </style>
 </head>
 <body>
-    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <nav><a href="../index.html"><- Back to Documentation</a></nav>
     <h1>Advanced Usage</h1>
     <p>Push the component with large datasets, imperative orchestration, and recovery workflows.</p>
 
@@ -106,11 +106,11 @@
         <div class="demo">
             <ck-multiselect-grid id="fullControl" class="panel"></ck-multiselect-grid>
         </div>
-        <pre class="code"><code>fullControl.title = 'Provision OAuth scopes';
+        <pre class="code"><code>fullControl.title = 'Provision OAuth Items';
 fullControl.description = 'All changes are persisted once you hit Save.';
 fullControl.setAttribute('fieldset-id', 'provisioning');
 fullControl.setAttribute('fieldset-class', 'provision stack');
-fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.manage.apps']));</code></pre>
+fullControl.setAttribute('selectedItems', JSON.stringify(['item.read', 'item.manage.apps']));</code></pre>
     </div>
 
     <div class="example" id="complex-data">
@@ -120,7 +120,7 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
             <ck-multiselect-grid id="complexGrid"></ck-multiselect-grid>
             <div class="state-grid" id="complexReadout"></div>
         </div>
-        <div class="note">Missing values (<code>scope.legacy</code>) are auto-generated so users can still deselect them.</div>
+        <div class="note">Missing values (<code>Item.legacy</code>) are auto-generated so users can still deselect them.</div>
     </div>
 
     <div class="example" id="performance-optimization">
@@ -153,7 +153,7 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
 
     <div class="example" id="programmatic-state">
         <h3>Programmatic State Manipulation</h3>
-        <p>Synchronizes the grid with a “template” dropdown that swaps entire selection presets.</p>
+        <p>Synchronizes the grid with a "template" dropdown that swaps entire selection presets.</p>
         <div class="demo">
             <label>
                 Preset
@@ -186,8 +186,8 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
         import { optionsCatalog, setGridData, observeSelections } from './shared-examples.js';
 
         const fullControl = document.querySelector('#fullControl');
-        setGridData(fullControl, optionsCatalog.complex, ['scope.read', 'scope.manage.apps']);
-        fullControl.title = 'Provision OAuth scopes';
+        setGridData(fullControl, optionsCatalog.complex, ['item.read', 'item.manage.apps']);
+        fullControl.title = 'Provision OAuth Items';
         fullControl.description = 'All changes are persisted once you hit Save.';
         fullControl.setAttribute('fieldset-id', 'provisioning');
         fullControl.setAttribute('fieldset-class', 'provision stack');
@@ -195,14 +195,14 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
         const complexGrid = document.querySelector('#complexGrid');
         const complexReadout = document.querySelector('#complexReadout');
         const complexData = [
-            'scope.read',
-            { label: 'Scope.Write', value: 'scope.write' },
-            { label: 'Scope.ManageApps', value: 'scope.manage.apps' },
-            { label: 'Scope.Reporting', value: 'scope.reporting' }
+            'item.read',
+            { label: 'Item.Write', value: 'item.write' },
+            { label: 'Item.ManageApps', value: 'item.manage.apps' },
+            { label: 'Item.Reporting', value: 'item.reporting' }
         ];
-        setGridData(complexGrid, complexData, ['scope.legacy', 'scope.write']);
+        setGridData(complexGrid, complexData, ['item.legacy', 'item.write']);
         observeSelections(complexGrid, state => {
-            complexReadout.innerHTML = `Total: ${state.total} • Synthetic selections preserved: ${state.selected.includes('scope.legacy')}`;
+            complexReadout.innerHTML = `Total: ${state.total} * Synthetic selections preserved: ${state.selected.includes('item.legacy')}`;
         });
 
         const performanceGrid = document.querySelector('#performanceGrid');
@@ -217,7 +217,7 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
         }
 
         observeSelections(performanceGrid, state => {
-            performanceReadout.textContent = `${state.total} options rendered • ${state.checkedCount} selected`;
+            performanceReadout.textContent = `${state.total} options rendered * ${state.checkedCount} selected`;
         });
 
         renderLarge.addEventListener('click', () => writePerformance(optionsCatalog.large));
@@ -226,7 +226,7 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
 
         const methodGrid = document.querySelector('#methodGrid');
         const methodLog = document.querySelector('#methodLog');
-        setGridData(methodGrid, optionsCatalog.base, ['scope.read']);
+        setGridData(methodGrid, optionsCatalog.base, ['item.read']);
 
         function setSelections(values) {
             methodGrid.setAttribute('selectedItems', JSON.stringify(values));
@@ -245,23 +245,23 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
 
         methodGrid.addEventListener('ck-multiselect-option-selected', event => {
             const item = document.createElement('li');
-            item.textContent = `selected • ${event.detail.option.value}`;
+            item.textContent = `selected * ${event.detail.option.value}`;
             methodLog.prepend(item);
         });
         methodGrid.addEventListener('ck-multiselect-option-unselected', event => {
             const item = document.createElement('li');
-            item.textContent = `unselected • ${event.detail.option.value}`;
+            item.textContent = `unselected * ${event.detail.option.value}`;
             methodLog.prepend(item);
         });
 
         const presetGrid = document.querySelector('#presetGrid');
         const presetReadout = document.querySelector('#presetReadout');
         const presetSelect = document.querySelector('#presetSelect');
-        setGridData(presetGrid, optionsCatalog.base, ['scope.read']);
+        setGridData(presetGrid, optionsCatalog.base, ['item.read']);
 
         const presets = {
-            'read-only': ['scope.read', 'scope.audit'],
-            writer: ['scope.read', 'scope.write', 'scope.reporting'],
+            'read-only': ['item.read', 'item.audit'],
+            writer: ['item.read', 'item.write', 'item.reporting'],
             admin: optionsCatalog.base.map(option => option.value)
         };
 
@@ -275,23 +275,24 @@ fullControl.setAttribute('selectedItems', JSON.stringify(['scope.read', 'scope.m
         });
 
         observeSelections(presetGrid, state => {
-            presetReadout.textContent = `${presetSelect.value} preset • ${state.checkedCount} scopes`;
+            presetReadout.textContent = `${presetSelect.value} preset * ${state.checkedCount} Items`;
         });
         applyPreset('read-only');
 
         const resilientGrid = document.querySelector('#resilientGrid');
         const errorMessage = document.querySelector('#errorMessage');
-        setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
 
         document.querySelector('#injectBad').addEventListener('click', () => {
-            resilientGrid.setAttribute('availableItems', '[scope.read]');
+            resilientGrid.setAttribute('availableItems', '[Item.read]');
             errorMessage.textContent = 'Malformed JSON detected. Check console warnings.';
         });
 
         document.querySelector('#recoverGood').addEventListener('click', () => {
-            setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+            setGridData(resilientGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
             errorMessage.textContent = 'Healthy dataset.';
         });
     </script>
 </body>
 </html>
+

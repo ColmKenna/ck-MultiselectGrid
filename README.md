@@ -14,7 +14,7 @@ A modern web component library built with TypeScript and Rollup, designed to be 
 
 ### Via GitHub Packages
 
-First, configure npm to use GitHub Packages for this scope. Create or update your `.npmrc` file:
+First, configure npm to use GitHub Packages for this namespace. Create or update your `.npmrc` file:
 
 ```
 @colmkenna:registry=https://npm.pkg.github.com
@@ -57,20 +57,20 @@ An accessible multiselect grid that combines a configurable `<fieldset>` header 
 
 <!-- With custom title + helper text -->
 <ck-multiselect-grid
-  title="Select Resource Scopes"
-  description="Choose which resource scopes this client is allowed to request."
+  title="Select Items"
+  description="Choose the items that apply to this client."
 ></ck-multiselect-grid>
 
 <!-- Control the surrounding fieldset -->
 <ck-multiselect-grid
-  fieldset-id="scopes-fieldset"
-  fieldset-class="scope-block"
+  fieldset-id="ck-multiselect-grid-fieldset"
+  fieldset-class="selection-block"
 ></ck-multiselect-grid>
 
 <!-- Drive the checkbox list via JSON attributes -->
 <ck-multiselect-grid
-  availableItems='["Scope.Read","Scope.Write","Scope.Manage"]'
-  selectedItems='["Scope.Write"]'
+  availableItems='["Item.Read","Item.Write","Item.Manage"]'
+  selectedItems='["Item.Write"]'
 ></ck-multiselect-grid>
 ```
 
@@ -78,10 +78,9 @@ An accessible multiselect grid that combines a configurable `<fieldset>` header 
 
 | Attribute | Type   | Default | Description                    |
 |-----------|--------|---------|--------------------------------|
-| `title` | string | "Select Resource Scopes" | Label text |
-| `description` | string | "Choose which resource scopes this client is allowed to request." | Helper text (preferred) |
-| `discription` | string | "Choose which resource scopes this client is allowed to request." | Helper text (legacy spelling; `description` wins if both exist) |
-| `fieldset-id` | string | `scopes-fieldset` | Sets the `<fieldset>` `id` that wraps the form group |
+| `title` | string | "Select Items" | Label text |
+| `description` | string | "Choose the items that apply to this client." | Helper text |
+| `fieldset-id` | string | `ck-multiselect-grid-fieldset` | Sets the `<fieldset>` `id` that wraps the form group |
 | `fieldset-class` | string | `""` | Appends one or more classes in addition to the default `multiselect-fieldset` |
 | `availableItems` | JSON array | `[]` | Array of strings or objects (`{ id?, name?, label?, value? }`) describing each checkbox option |
 | `selectedItems` | JSON array | `[]` | Array of strings referencing the option `value` entries that should render as checked; values missing from `availableItems` are synthesized into the grid so persisted selections still display |
@@ -107,13 +106,13 @@ The component also supports JavaScript property access:
 
 ```javascript
 const multiselectGrid = document.querySelector('ck-multiselect-grid');
-multiselectGrid.title = 'Select Resource Scopes';
-multiselectGrid.description = 'Choose which resource scopes this client is allowed to request.';
+multiselectGrid.title = 'Select Items';
+multiselectGrid.description = 'Choose the items that apply to this client.';
 multiselectGrid.setAttribute(
   'availableItems',
-  JSON.stringify(['Scope.Read', 'Scope.Write'])
+  JSON.stringify(['Item.Read', 'Item.Write'])
 );
-multiselectGrid.setAttribute('selectedItems', JSON.stringify(['Scope.Read']));
+multiselectGrid.setAttribute('selectedItems', JSON.stringify(['Item.Read']));
 ```
 
 ## 🛠️ Development
@@ -312,7 +311,7 @@ npm run build
 
 2. Make sure you're authenticated with GitHub Packages:
 ```bash
-npm login --scope=@colmkenna --registry=https://npm.pkg.github.com
+npm login --registry=https://npm.pkg.github.com
 ```
 
 3. Publish:

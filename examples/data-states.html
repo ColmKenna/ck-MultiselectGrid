@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Data States – ck-multiselect-grid</title>
+    <title>Data States - ck-multiselect-grid</title>
     <style>
         body {
             font-family: "Sora", "Space Grotesk", system-ui, sans-serif;
@@ -93,7 +93,7 @@
     </style>
 </head>
 <body>
-    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <nav><a href="../index.html"><- Back to Documentation</a></nav>
     <h1>Data States</h1>
     <p>Visualize every meaningful state transition inside <code>&lt;ck-multiselect-grid&gt;</code>.</p>
 
@@ -108,7 +108,7 @@
     <div class="example" id="loading-state">
         <h3>Loading State</h3>
         <div class="demo" id="loadingWrapper">
-            <div class="overlay" id="loadingOverlay">Loading scopes…</div>
+            <div class="overlay" id="loadingOverlay">Loading Items...</div>
             <ck-multiselect-grid id="loadingGrid"></ck-multiselect-grid>
             <p id="loadingMessage"></p>
         </div>
@@ -182,7 +182,7 @@
     <div class="example" id="pending-busy">
         <h3>Pending / Busy</h3>
         <div class="demo" id="pendingDemo" data-busy="false">
-            <div class="overlay">Checking policy…</div>
+            <div class="overlay">Checking policy...</div>
             <ck-multiselect-grid id="pendingGrid"></ck-multiselect-grid>
             <button class="inline" id="triggerPending">Simulate pending</button>
         </div>
@@ -190,9 +190,9 @@
 
     <div class="example" id="state-transitions">
         <h3>State Transitions</h3>
-        <p>Drives the component through empty → loading → success as well as error recovery.</p>
+        <p>Drives the component through empty -> loading -> success as well as error recovery.</p>
         <div class="demo" id="transitionDemo" data-busy="false">
-            <div class="overlay" id="transitionOverlay">Loading…</div>
+            <div class="overlay" id="transitionOverlay">Loading...</div>
             <ck-multiselect-grid id="transitionGrid"></ck-multiselect-grid>
             <div class="toolbar">
                 <button class="inline" id="goEmpty">Empty</button>
@@ -210,8 +210,8 @@
 
         // Empty state
         const emptyGrid = document.querySelector('#emptyGrid');
-        emptyGrid.title = 'No scopes yet';
-        emptyGrid.description = 'Add scopes from the admin console when available.';
+        emptyGrid.title = 'No Items yet';
+        emptyGrid.description = 'Add Items from the admin console when available.';
         setGridData(emptyGrid, []);
 
         // Loading state
@@ -220,12 +220,12 @@
         const loadingMessage = document.querySelector('#loadingMessage');
         loadingWrapper.dataset.state = 'loading';
         loadingWrapper.setAttribute('aria-busy', 'true');
-        loadingMessage.textContent = 'Fetching scopes…';
+        loadingMessage.textContent = 'Fetching Items...';
         setTimeout(() => {
             setGridData(loadingGrid, optionsCatalog.base.slice(0, 4));
             loadingWrapper.dataset.state = 'ready';
             loadingWrapper.removeAttribute('aria-busy');
-            loadingMessage.textContent = 'Loaded 4 scopes.';
+            loadingMessage.textContent = 'Loaded 4 Items.';
         }, 900);
 
         // Error state
@@ -251,9 +251,9 @@
         // Success state
         const successGrid = document.querySelector('#successGrid');
         const successStatus = document.querySelector('#successStatus');
-        setGridData(successGrid, optionsCatalog.base.slice(0, 5), ['scope.read', 'scope.write']);
+        setGridData(successGrid, optionsCatalog.base.slice(0, 5), ['item.read', 'item.write']);
         observeSelections(successGrid, state => {
-            successStatus.textContent = `Persisted ${state.checkedCount}/${state.total} scopes.`;
+            successStatus.textContent = `Persisted ${state.checkedCount}/${state.total} Items.`;
         });
 
         // Disabled state
@@ -275,13 +275,13 @@
         // Partial data
         const partialGrid = document.querySelector('#partialGrid');
         const partialMessage = document.querySelector('#partialMessage');
-        const partialOptions = ['scope.read', { label: 'Scope.Write', value: 'scope.write' }, { label: 'Legacy Scope' }];
-        setGridData(partialGrid, partialOptions, ['Legacy Scope']);
-        partialMessage.textContent = 'Legacy Scope synthesized for persisted data.';
+        const partialOptions = ['item.read', { label: 'Item.Write', value: 'item.write' }, { label: 'Legacy Item' }];
+        setGridData(partialGrid, partialOptions, ['Legacy Item']);
+        partialMessage.textContent = 'Legacy Item synthesized for persisted data.';
 
         // Readonly state
         const readonlyGrid = document.querySelector('#readonlyGrid');
-        setGridData(readonlyGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        setGridData(readonlyGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
         readonlyGrid.style.pointerEvents = 'none';
         readonlyGrid.style.opacity = '0.65';
 
@@ -336,7 +336,7 @@
 
         function setState(name) {
             transitionDemo.dataset.busy = name === 'loading' ? 'true' : 'false';
-            transitionOverlay.textContent = name === 'loading' ? 'Loading…' : 'Idle';
+            transitionOverlay.textContent = name === 'loading' ? 'Loading...' : 'Idle';
             switch (name) {
                 case 'empty':
                     setGridData(transitionGrid, []);
@@ -351,7 +351,7 @@
                     }, 700);
                     break;
                 case 'success':
-                    setGridData(transitionGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+                    setGridData(transitionGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
                     transitionMessage.textContent = 'Success state';
                     transitionDemo.dataset.busy = 'false';
                     break;
@@ -371,3 +371,4 @@
     </script>
 </body>
 </html>
+

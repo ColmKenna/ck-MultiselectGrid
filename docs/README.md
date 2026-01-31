@@ -7,16 +7,16 @@
 
 ```html
 <ck-multiselect-grid
-  title="Select Resource Scopes"
-  description="Choose which resource scopes this client is allowed to request."
+  title="Select Items"
+  description="Choose the items that apply to this client."
 ></ck-multiselect-grid>
 ```
 ```html
 <ck-multiselect-grid
-  title="Select Resource Scopes"
-  description="Choose which resource scopes this client is allowed to request."
-  availableItems='["Scope.Read","Scope.Write"]'
-  selectedItems='["Scope.Write"]'
+  title="Select Items"
+  description="Choose the items that apply to this client."
+  availableItems='["Item.Read","Item.Write"]'
+  selectedItems='["Item.Write"]'
 ></ck-multiselect-grid>
 ```
 

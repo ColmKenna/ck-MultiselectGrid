@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Basic Usage – ck-multiselect-grid</title>
+    <title>Basic Usage - ck-multiselect-grid</title>
     <style>
         :root {
             color-scheme: light;
@@ -115,7 +115,7 @@
     </style>
 </head>
 <body>
-    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <nav><a href="../index.html"><- Back to Documentation</a></nav>
     <h1>Basic Usage</h1>
     <p class="lead">The essentials for rendering <code>&lt;ck-multiselect-grid&gt;</code>, wiring attributes, reading internal state, and validating user choices.</p>
 
@@ -125,7 +125,7 @@
         <div class="demo">
             <ck-multiselect-grid id="minimalGrid"></ck-multiselect-grid>
             <div class="state-panel">
-                <span id="minimalState">Selected: —</span>
+                <span id="minimalState">Selected: -</span>
             </div>
         </div>
         <h4>HTML</h4>
@@ -150,10 +150,10 @@ observeSelections(minimalGrid, state => {
         <div class="demo">
             <ck-multiselect-grid id="attributeGrid"></ck-multiselect-grid>
         </div>
-        <pre class="code"><code>attributeGrid.title = 'API Scope Access';
-attributeGrid.description = 'Pick the scopes that should ship with the token.';
-attributeGrid.setAttribute('fieldset-id', 'scope-grid');
-attributeGrid.setAttribute('fieldset-class', 'stack scope-a');</code></pre>
+        <pre class="code"><code>attributeGrid.title = 'API Item Access';
+attributeGrid.description = 'Pick the Items that should ship with the token.';
+attributeGrid.setAttribute('fieldset-id', 'Item-grid');
+attributeGrid.setAttribute('fieldset-class', 'stack Item-a');</code></pre>
         <div class="note">
             <strong>Testing hook:</strong> the <code>fieldset-id</code> attribute is ideal for <code>aria-describedby</code> targeting or integration tests.
         </div>
@@ -161,7 +161,7 @@ attributeGrid.setAttribute('fieldset-class', 'stack scope-a');</code></pre>
 
     <div class="example" id="default-styling">
         <h3>Default Styling</h3>
-        <p>Illustrates the component without any custom CSS variables—only the provided design tokens defined at the page level.</p>
+        <p>Illustrates the component without any custom CSS variables-only the provided design tokens defined at the page level.</p>
         <div class="demo">
             <ck-multiselect-grid id="stylingGrid" class="default-theme"></ck-multiselect-grid>
         </div>
@@ -191,24 +191,24 @@ observeSelections(stateGrid, state => {
 
     <div class="example" id="validation-basics">
         <h3>Validation Basics</h3>
-        <p>Simple “at least one scope” validation. The validation message toggles in real time as selections change.</p>
+        <p>Simple "at least one Item" validation. The validation message toggles in real time as selections change.</p>
         <div class="demo">
             <ck-multiselect-grid id="validationGrid"></ck-multiselect-grid>
             <div class="state-panel">
                 <span id="validationState">Ready</span>
             </div>
             <button class="primary" id="validateButton">Validate selection</button>
-            <p class="validation-message" id="validationMessage" data-state="invalid">No scopes selected yet.</p>
+            <p class="validation-message" id="validationMessage" data-state="invalid">No Items selected yet.</p>
         </div>
         <pre class="code"><code>function validateAtLeastOne(state) {
   const message = document.querySelector('#validationMessage');
   if (state.checkedCount === 0) {
     message.dataset.state = 'invalid';
-    message.textContent = 'Select at least one scope.';
+    message.textContent = 'Select at least one Item.';
     return false;
   }
   message.dataset.state = 'valid';
-  message.textContent = `${state.checkedCount} scope(s) ready.`;
+  message.textContent = `${state.checkedCount} Item(s) ready.`;
   return true;
 }
 
@@ -238,17 +238,17 @@ document.querySelector('#validateButton').addEventListener('click', () => {
 
         const attributeGrid = document.querySelector('#attributeGrid');
         setGridData(attributeGrid, optionsCatalog.base);
-        attributeGrid.title = 'API Scope Access';
-        attributeGrid.description = 'Pick the scopes that should ship with the token.';
-        attributeGrid.setAttribute('fieldset-id', 'scope-grid');
-        attributeGrid.setAttribute('fieldset-class', 'stack scope-a');
+        attributeGrid.title = 'API Item Access';
+        attributeGrid.description = 'Pick the Items that should ship with the token.';
+        attributeGrid.setAttribute('fieldset-id', 'Item-grid');
+        attributeGrid.setAttribute('fieldset-class', 'stack Item-a');
 
         const stylingGrid = document.querySelector('#stylingGrid');
-        setGridData(stylingGrid, optionsCatalog.base, ['scope.read', 'scope.write']);
+        setGridData(stylingGrid, optionsCatalog.base, ['item.read', 'item.write']);
 
         const stateGrid = document.querySelector('#stateGrid');
         const debugPanel = document.querySelector('#debugPanel');
-        setGridData(stateGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
+        setGridData(stateGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
         observeSelections(stateGrid, state => {
             debugPanel.innerHTML = '';
             const badge = document.createElement('span');
@@ -264,11 +264,11 @@ document.querySelector('#validateButton').addEventListener('click', () => {
         function validateAtLeastOne(state) {
             if (state.checkedCount === 0) {
                 validationMessage.dataset.state = 'invalid';
-                validationMessage.textContent = 'Select at least one scope.';
+                validationMessage.textContent = 'Select at least one Item.';
                 return false;
             }
             validationMessage.dataset.state = 'valid';
-            validationMessage.textContent = `${state.checkedCount} scope(s) ready.`;
+            validationMessage.textContent = `${state.checkedCount} Item(s) ready.`;
             return true;
         }
 
@@ -283,3 +283,4 @@ document.querySelector('#validateButton').addEventListener('click', () => {
     </script>
 </body>
 </html>
+

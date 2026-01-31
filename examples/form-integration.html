@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Form Integration – ck-multiselect-grid</title>
+    <title>Form Integration - ck-multiselect-grid</title>
     <style>
         body {
             font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
@@ -144,7 +144,7 @@
         }
 
         .grid-wrapper[data-state="loading"]::after {
-            content: 'Loading…';
+            content: 'Loading...';
             position: absolute;
             inset: 0;
             display: flex;
@@ -156,7 +156,7 @@
     </style>
 </head>
 <body>
-    <nav><a href="../index.html">← Back to Documentation</a></nav>
+    <nav><a href="../index.html"><- Back to Documentation</a></nav>
     <h1>Form Integration</h1>
     <p>Use <code>&lt;ck-multiselect-grid&gt;</code> inside forms, track touched/dirty states, surface errors, and coordinate with other controls.</p>
 
@@ -164,13 +164,13 @@
         <h3>Basic Form</h3>
         <p>Serializes selections into a hidden input during submit.</p>
         <div class="demo">
-            <form id="scopeForm">
+            <form id="ItemForm">
                 <ck-multiselect-grid id="formGrid"></ck-multiselect-grid>
                 <button class="primary" type="submit">Submit</button>
                 <p id="formOutput"></p>
             </form>
         </div>
-        <div class="note">The component lives outside the form&#39;s native serialization scope, so syncing to hidden inputs keeps submissions complete.</div>
+        <div class="note">The component lives outside the form&#39;s native serialization Item, so syncing to hidden inputs keeps submissions complete.</div>
     </div>
 
     <div class="example" id="validation-states">
@@ -193,7 +193,7 @@
         <p>Inline messaging that reacts to user edits and programmatic validation.</p>
         <div class="demo">
             <ck-multiselect-grid id="errorGrid"></ck-multiselect-grid>
-            <p class="error-text" id="inlineError">Select at least two scopes.</p>
+            <p class="error-text" id="inlineError">Select at least two Items.</p>
             <div class="toolbar">
                 <button class="secondary" id="forceError">Force error</button>
                 <button class="secondary" id="clearError">Clear</button>
@@ -206,7 +206,7 @@
         <p>Add and remove component instances programmatically while keeping validation intact.</p>
         <div class="demo">
             <div class="toolbar">
-                <button class="secondary" id="addInstance">Add scope grid</button>
+                <button class="secondary" id="addInstance">Add Item grid</button>
                 <button class="secondary" id="removeInstance">Remove</button>
             </div>
             <div id="dynamicContainer" class="status-table"></div>
@@ -243,14 +243,14 @@
         <div class="demo">
             <div class="status-table">
                 <div class="status-card">
-                    <h4>Required Scopes</h4>
+                    <h4>Required Items</h4>
                     <ck-multiselect-grid id="requiredGrid"></ck-multiselect-grid>
                     <p class="error-text" id="requiredMessage">Required field.</p>
                 </div>
                 <div class="status-card">
-                    <h4>Optional Scopes</h4>
+                    <h4>Optional Items</h4>
                     <ck-multiselect-grid id="optionalGrid"></ck-multiselect-grid>
-                    <p>Optional—no validation.</p>
+                    <p>Optional-no validation.</p>
                 </div>
             </div>
         </div>
@@ -269,7 +269,7 @@
                 <p id="disabledOutput"></p>
             </form>
         </div>
-        <div class="note">Disabling requires iterating over shadow checkboxes—see script below.</div>
+        <div class="note">Disabling requires iterating over shadow checkboxes-see script below.</div>
     </div>
 
     <script type="module">
@@ -277,14 +277,14 @@
         import { optionsCatalog, setGridData, observeSelections, syncHiddenInput, snapshotState } from './shared-examples.js';
 
         // Basic form
-        const scopeForm = document.querySelector('#scopeForm');
+        const ItemForm = document.querySelector('#ItemForm');
         const formGrid = document.querySelector('#formGrid');
         const formOutput = document.querySelector('#formOutput');
-        setGridData(formGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
-        syncHiddenInput(scopeForm, formGrid, 'scopes');
-        scopeForm.addEventListener('submit', event => {
+        setGridData(formGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
+        syncHiddenInput(ItemForm, formGrid, 'Items');
+        ItemForm.addEventListener('submit', event => {
             event.preventDefault();
-            formOutput.textContent = `Submitted payload: ${scopeForm.querySelector('input[name="scopes"]').value}`;
+            formOutput.textContent = `Submitted payload: ${ItemForm.querySelector('input[name="Items"]').value}`;
         });
 
         // Validation states
@@ -337,14 +337,14 @@
         setGridData(errorGrid, optionsCatalog.base.slice(0, 5));
         function evaluateError(state) {
             if (state.checkedCount < 2) {
-                inlineError.textContent = 'Please select at least two scopes.';
+                inlineError.textContent = 'Please select at least two Items.';
             } else {
                 inlineError.textContent = '';
             }
         }
         observeSelections(errorGrid, evaluateError);
         document.querySelector('#forceError').addEventListener('click', () => {
-            inlineError.textContent = 'Server rejected scopes. Try again.';
+            inlineError.textContent = 'Server rejected Items. Try again.';
         });
         document.querySelector('#clearError').addEventListener('click', () => evaluateError(snapshotState(errorGrid)));
 
@@ -356,13 +356,13 @@
             const wrapper = document.createElement('div');
             wrapper.className = 'status-card';
             wrapper.dataset.instance = String(instanceCount);
-            wrapper.innerHTML = `<h4>Instance ${instanceCount}</h4><ck-multiselect-grid></ck-multiselect-grid><p class="error-text">0 scopes</p>`;
+            wrapper.innerHTML = `<h4>Instance ${instanceCount}</h4><ck-multiselect-grid></ck-multiselect-grid><p class="error-text">0 Items</p>`;
             dynamicContainer.appendChild(wrapper);
             const grid = wrapper.querySelector('ck-multiselect-grid');
-            setGridData(grid, optionsCatalog.base, instanceCount % 2 ? ['scope.read'] : []);
+            setGridData(grid, optionsCatalog.base, instanceCount % 2 ? ['item.read'] : []);
             const meter = wrapper.querySelector('p');
             observeSelections(grid, state => {
-                meter.textContent = `${state.checkedCount} scope(s)`;
+                meter.textContent = `${state.checkedCount} Item(s)`;
             });
         }
         document.querySelector('#addInstance').addEventListener('click', addInstance);
@@ -378,7 +378,7 @@
         setGridData(eventGrid, optionsCatalog.base.slice(0, 4));
         function log(message) {
             const row = document.createElement('li');
-            row.textContent = `${new Date().toLocaleTimeString()} • ${message}`;
+            row.textContent = `${new Date().toLocaleTimeString()} * ${message}`;
             eventLog.prepend(row);
             const items = Array.from(eventLog.querySelectorAll('li'));
             if (items.length > 10) items.slice(10).forEach(li => li.remove());
@@ -396,10 +396,10 @@
         const resetForm = document.querySelector('#resetForm');
         const resetGrid = document.querySelector('#resetGrid');
         const resetState = document.querySelector('#resetState');
-        setGridData(resetGrid, optionsCatalog.base.slice(0, 4), ['scope.read']);
-        const defaultSelections = ['scope.read'];
+        setGridData(resetGrid, optionsCatalog.base.slice(0, 4), ['item.read']);
+        const defaultSelections = ['item.read'];
         resetForm.addEventListener('reset', () => {
-            resetState.textContent = 'form.reset() fired – component retains selections until re-render.';
+            resetState.textContent = 'form.reset() fired - component retains selections until re-render.';
         });
         document.querySelector('#gridReset').addEventListener('click', () => {
             resetGrid.setAttribute('selectedItems', JSON.stringify(defaultSelections));
@@ -416,7 +416,7 @@
             if (state.checkedCount === 0) {
                 requiredMessage.textContent = 'Required field.';
             } else {
-                requiredMessage.textContent = `${state.checkedCount} scope(s) selected.`;
+                requiredMessage.textContent = `${state.checkedCount} Item(s) selected.`;
             }
         }
         observeSelections(requiredGrid, updateRequired);
@@ -456,3 +456,4 @@
     </script>
 </body>
 </html>
+

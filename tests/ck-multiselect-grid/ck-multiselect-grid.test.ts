@@ -33,11 +33,11 @@ describe('CkMultiselectGrid Component', () => {
     expect(element.shadowRoot).toBeTruthy();
   });
 
-  test('should render title and discription in a form-group', () => {
-    element.setAttribute('title', 'Select Resource Scopes');
+  test('should render title and description in a form-group', () => {
+    element.setAttribute('title', 'Select Custom Items');
     element.setAttribute(
-      'discription',
-      'Choose which resource scopes this client is allowed to request.'
+      'description',
+      'Choose which custom items this client is allowed to request.'
     );
     element.connectedCallback();
 
@@ -48,23 +48,23 @@ describe('CkMultiselectGrid Component', () => {
     expect(formGroup).toBeTruthy();
 
     const label = root?.querySelector('.form-label');
-    expect(label?.textContent).toBe('Select Resource Scopes');
+    expect(label?.textContent).toBe('Select Custom Items');
 
     const helpText = root?.querySelector('.form-text');
     expect(helpText?.textContent).toBe(
-      'Choose which resource scopes this client is allowed to request.'
+      'Choose which custom items this client is allowed to request.'
     );
   });
 
   test('should update content when title attribute changes', () => {
-    element.setAttribute('title', 'Select Resource Scopes');
+    element.setAttribute('title', 'Initial Title');
     element.connectedCallback();
     element.setAttribute('title', 'Select Another Title');
 
     // Trigger attribute change callback
     element.attributeChangedCallback(
       'title',
-      'Select Resource Scopes',
+      'Initial Title',
       'Select Another Title'
     );
 
@@ -72,23 +72,22 @@ describe('CkMultiselectGrid Component', () => {
     expect(label?.textContent).toBe('Select Another Title');
   });
 
-  test('should observe title, description, discription and fieldset attributes', () => {
+  test('should observe title, description, and fieldset attributes', () => {
     const observedAttributes = CkMultiselectGrid.observedAttributes;
     expect(observedAttributes).toContain('title');
     expect(observedAttributes).toContain('description');
-    expect(observedAttributes).toContain('discription');
     expect(observedAttributes).toContain('fieldset-id');
     expect(observedAttributes).toContain('fieldset-class');
   });
 
-  test('should have default title and discription values', () => {
+  test('should have default title and description values', () => {
     element.connectedCallback();
     const label = element.shadowRoot?.querySelector('.form-label');
     const helpText = element.shadowRoot?.querySelector('.form-text');
 
-    expect(label?.textContent).toBe('Select Resource Scopes');
+    expect(label?.textContent).toBe('Select Items');
     expect(helpText?.textContent).toBe(
-      'Choose which resource scopes this client is allowed to request.'
+      'Choose the items that apply to this client.'
     );
   });
 
@@ -99,17 +98,17 @@ describe('CkMultiselectGrid Component', () => {
     const formGroup = element.shadowRoot?.querySelector('.form-group');
 
     expect(fieldset).toBeTruthy();
-    expect(fieldset?.id).toBe('scopes-fieldset');
+    expect(fieldset?.id).toBe('ck-multiselect-grid-fieldset');
     expect(fieldset?.classList.contains('multiselect-fieldset')).toBe(true);
     expect(formGroup?.parentElement).toBe(fieldset);
   });
 
   test('should use attribute-driven fieldset id', () => {
-    element.setAttribute('fieldset-id', 'custom-scopes');
+    element.setAttribute('fieldset-id', 'custom-fieldset');
     element.connectedCallback();
 
     const fieldset = element.shadowRoot?.querySelector('fieldset');
-    expect(fieldset?.id).toBe('custom-scopes');
+    expect(fieldset?.id).toBe('custom-fieldset');
   });
 
   test('should append custom fieldset class while keeping the default', () => {
@@ -126,7 +125,11 @@ describe('CkMultiselectGrid Component', () => {
     element.connectedCallback();
 
     element.setAttribute('fieldset-id', 'later-id');
-    element.attributeChangedCallback('fieldset-id', 'scopes-fieldset', 'later-id');
+    element.attributeChangedCallback(
+      'fieldset-id',
+      'ck-multiselect-grid-fieldset',
+      'later-id'
+    );
 
     element.setAttribute('fieldset-class', 'dynamic');
     element.attributeChangedCallback('fieldset-class', '', 'dynamic');
@@ -138,8 +141,8 @@ describe('CkMultiselectGrid Component', () => {
   });
 
   test('should render checkbox options from availableItems and selectedItems', () => {
-    const available = ['Scope.Read', 'Scope.Write'];
-    const selected = ['Scope.Write'];
+    const available = ['Item.Read', 'Item.Write'];
+    const selected = ['Item.Write'];
 
     element.setAttribute('availableItems', JSON.stringify(available));
     element.setAttribute('selectedItems', JSON.stringify(selected));
@@ -147,29 +150,37 @@ describe('CkMultiselectGrid Component', () => {
 
     const grid = element.shadowRoot?.querySelector('.multiselect-grid');
     expect(grid?.getAttribute('role')).toBe('group');
-    expect(grid?.getAttribute('aria-labelledby')).toBe('scopes-label');
+    expect(grid?.getAttribute('aria-labelledby')).toBe(
+      'ck-multiselect-grid-label'
+    );
 
     const options = element.shadowRoot?.querySelectorAll('.multiselect-option');
     expect(options?.length).toBe(2);
 
-    const readInput = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    const readInput = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement | null;
     expect(readInput).toBeTruthy();
     expect(readInput?.classList.contains('multiselect-input')).toBe(true);
-    expect(readInput?.getAttribute('name')).toBe('Scope.Read');
-    expect(readInput?.getAttribute('value')).toBe('Scope.Read');
-    expect(readInput?.getAttribute('aria-describedby')).toBe('scope.read-desc');
+    expect(readInput?.getAttribute('name')).toBe('Item.Read');
+    expect(readInput?.getAttribute('value')).toBe('Item.Read');
+    expect(readInput?.getAttribute('aria-describedby')).toBe('item.read-desc');
     expect(readInput?.hasAttribute('checked')).toBe(false);
 
-    const writeInput = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    const writeInput = element.shadowRoot?.getElementById(
+      'item.write'
+    ) as HTMLInputElement | null;
     expect(writeInput?.hasAttribute('checked')).toBe(true);
 
-    const pillText = element.shadowRoot?.querySelectorAll('.multiselect-pill')?.[1]?.textContent;
-    expect(pillText).toBe('Scope.Write');
+    const pillText =
+      element.shadowRoot?.querySelectorAll('.multiselect-pill')?.[1]
+        ?.textContent;
+    expect(pillText).toBe('Item.Write');
   });
 
   test('should synthesize missing options for selected values', () => {
-    const available = ['Scope.Read'];
-    const selected = ['Scope.Write'];
+    const available = ['Item.Read'];
+    const selected = ['Item.Write'];
 
     element.setAttribute('availableItems', JSON.stringify(available));
     element.setAttribute('selectedItems', JSON.stringify(selected));
@@ -178,25 +189,21 @@ describe('CkMultiselectGrid Component', () => {
     const options = element.shadowRoot?.querySelectorAll('.multiselect-option');
     expect(options?.length).toBe(2);
 
-    const readInput = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    const readInput = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement | null;
     expect(readInput?.hasAttribute('checked')).toBe(false);
 
-    const syntheticInput = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    const syntheticInput = element.shadowRoot?.getElementById(
+      'item.write'
+    ) as HTMLInputElement | null;
     expect(syntheticInput).toBeTruthy();
-    expect(syntheticInput?.getAttribute('value')).toBe('Scope.Write');
+    expect(syntheticInput?.getAttribute('value')).toBe('Item.Write');
     expect(syntheticInput?.hasAttribute('checked')).toBe(true);
 
-    const syntheticLabel = element.shadowRoot?.getElementById('scope.write-desc');
-    expect(syntheticLabel?.textContent).toBe('Scope.Write');
-  });
-
-  test('should prefer description over discription when both are present', () => {
-    element.setAttribute('description', 'Correctly spelled description.');
-    element.setAttribute('discription', 'Legacy misspelling.');
-    element.connectedCallback();
-
-    const helpText = element.shadowRoot?.querySelector('.form-text');
-    expect(helpText?.textContent).toBe('Correctly spelled description.');
+    const syntheticLabel =
+      element.shadowRoot?.getElementById('item.write-desc');
+    expect(syntheticLabel?.textContent).toBe('Item.Write');
   });
 
   test('should not interpret HTML-like title/description as DOM', () => {
@@ -221,13 +228,17 @@ describe('CkMultiselectGrid Component', () => {
     element.setAttribute('selectedItems', JSON.stringify([]));
     element.connectedCallback();
 
-    const checkbox = element.shadowRoot?.querySelector('input.multiselect-input');
+    const checkbox = element.shadowRoot?.querySelector(
+      'input.multiselect-input'
+    );
     expect(checkbox?.hasAttribute('checked')).toBe(false);
 
     element.setAttribute('selectedItems', JSON.stringify(['alpha']));
     await Promise.resolve();
 
-    const updatedCheckbox = element.shadowRoot?.querySelector('input.multiselect-input');
+    const updatedCheckbox = element.shadowRoot?.querySelector(
+      'input.multiselect-input'
+    );
     expect(updatedCheckbox?.hasAttribute('checked')).toBe(true);
   });
 
@@ -235,24 +246,30 @@ describe('CkMultiselectGrid Component', () => {
     element.setAttribute('availableItems', JSON.stringify(['alpha']));
     element.connectedCallback();
 
-    const initialOptions = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    const initialOptions = element.shadowRoot?.querySelectorAll(
+      '.multiselect-option'
+    );
     expect(initialOptions?.length).toBe(1);
 
     element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
     await Promise.resolve();
 
-    const updatedOptions = element.shadowRoot?.querySelectorAll('.multiselect-option');
+    const updatedOptions = element.shadowRoot?.querySelectorAll(
+      '.multiselect-option'
+    );
     expect(updatedOptions?.length).toBe(2);
   });
 
   test('should emit a custom event when an option becomes selected', () => {
-    element.setAttribute('availableItems', JSON.stringify(['Scope.Read']));
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
     element.connectedCallback();
 
     const handler = jest.fn();
     element.addEventListener('ck-multiselect-option-selected', handler);
 
-    const checkbox = element.shadowRoot?.getElementById('scope.read') as HTMLInputElement | null;
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement | null;
     expect(checkbox).toBeTruthy();
 
     if (!checkbox) return;
@@ -262,20 +279,22 @@ describe('CkMultiselectGrid Component', () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
     const eventDetail = handler.mock.calls[0][0].detail;
-    expect(eventDetail.option.value).toBe('Scope.Read');
-    expect(eventDetail.option.label).toBe('Scope.Read');
+    expect(eventDetail.option.value).toBe('Item.Read');
+    expect(eventDetail.option.label).toBe('Item.Read');
     expect(eventDetail.checked).toBe(true);
   });
 
   test('should emit a custom event when an option becomes unselected', () => {
-    element.setAttribute('availableItems', JSON.stringify(['Scope.Write']));
-    element.setAttribute('selectedItems', JSON.stringify(['Scope.Write']));
+    element.setAttribute('availableItems', JSON.stringify(['Item.Write']));
+    element.setAttribute('selectedItems', JSON.stringify(['Item.Write']));
     element.connectedCallback();
 
     const handler = jest.fn();
     element.addEventListener('ck-multiselect-option-unselected', handler);
 
-    const checkbox = element.shadowRoot?.getElementById('scope.write') as HTMLInputElement | null;
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.write'
+    ) as HTMLInputElement | null;
     expect(checkbox).toBeTruthy();
 
     if (!checkbox) return;
@@ -285,7 +304,7 @@ describe('CkMultiselectGrid Component', () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
     const eventDetail = handler.mock.calls[0][0].detail;
-    expect(eventDetail.option.value).toBe('Scope.Write');
+    expect(eventDetail.option.value).toBe('Item.Write');
     expect(eventDetail.checked).toBe(false);
   });
 
@@ -303,16 +322,22 @@ describe('CkMultiselectGrid styles', () => {
   test('should include Story-3 responsive grid layout rules', () => {
     expect(ckMultiselectGridCSS).toContain('.multiselect-fieldset');
     expect(ckMultiselectGridCSS).toContain('.multiselect-grid');
-    expect(ckMultiselectGridCSS).toContain('grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));');
+    expect(ckMultiselectGridCSS).toContain(
+      'grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));'
+    );
     expect(ckMultiselectGridCSS).toContain('@media (min-width: 768px)');
     expect(ckMultiselectGridCSS).toContain('@media (max-width: 575.98px)');
   });
 
   test('should apply interactive option + checkbox styling per Story-3 spec', () => {
     expect(ckMultiselectGridCSS).toContain('.multiselect-option');
-    expect(ckMultiselectGridCSS).toContain('.multiselect-option:has(.multiselect-input:checked)');
+    expect(ckMultiselectGridCSS).toContain(
+      '.multiselect-option:has(.multiselect-input:checked)'
+    );
     expect(ckMultiselectGridCSS).toContain('.multiselect-input:checked');
-    expect(ckMultiselectGridCSS).toContain("background-image: url(\"data:image/svg+xml");
+    expect(ckMultiselectGridCSS).toContain(
+      'background-image: url("data:image/svg+xml'
+    );
     expect(ckMultiselectGridCSS).toContain('.multiselect-pill');
   });
 });

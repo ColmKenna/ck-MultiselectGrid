@@ -3,6 +3,11 @@ import {
   ckMultiselectGridCSS,
 } from './ck-multiselect-grid.styles';
 
+const DEFAULT_TITLE = 'Select Items';
+const DEFAULT_DESCRIPTION = 'Choose the items that apply to this client.';
+const DEFAULT_FIELDSET_ID = 'ck-multiselect-grid-fieldset';
+const DEFAULT_LABEL_ID = 'ck-multiselect-grid-label';
+
 type MultiselectOption = {
   id: string;
   label: string;
@@ -73,7 +78,6 @@ export class CkMultiselectGrid extends HTMLElement {
     return [
       'title',
       'description',
-      'discription',
       'fieldset-id',
       'fieldset-class',
       'availableitems',
@@ -96,7 +100,7 @@ export class CkMultiselectGrid extends HTMLElement {
   }
 
   get title() {
-    return this.getAttribute('title') || 'Select Resource Scopes';
+    return this.getAttribute('title') || DEFAULT_TITLE;
   }
 
   set title(value: string) {
@@ -109,14 +113,6 @@ export class CkMultiselectGrid extends HTMLElement {
 
   set description(value: string) {
     this.setAttribute('description', value);
-  }
-
-  get discription(): string | null {
-    return this.getAttribute('discription');
-  }
-
-  set discription(value: string) {
-    this.setAttribute('discription', value);
   }
 
   private ensureInitialized() {
@@ -155,7 +151,7 @@ export class CkMultiselectGrid extends HTMLElement {
     const multiselectDiv = document.createElement('div');
     multiselectDiv.className = 'multiselect-grid';
     multiselectDiv.setAttribute('role', 'group');
-    multiselectDiv.setAttribute('aria-labelledby', 'scopes-label');
+    multiselectDiv.setAttribute('aria-labelledby', DEFAULT_LABEL_ID);
     this.multiselectGroup = multiselectDiv;
     this.fieldset.appendChild(this.multiselectGroup);
     this.container.appendChild(this.fieldset);
@@ -163,15 +159,11 @@ export class CkMultiselectGrid extends HTMLElement {
   }
 
   private getDescriptionText() {
-    return (
-      this.getAttribute('description') ??
-      this.getAttribute('discription') ??
-      'Choose which resource scopes this client is allowed to request.'
-    );
+    return this.getAttribute('description') ?? DEFAULT_DESCRIPTION;
   }
 
   private getFieldsetId(): string {
-    return this.getAttribute('fieldset-id')?.trim() || 'scopes-fieldset';
+    return this.getAttribute('fieldset-id')?.trim() || DEFAULT_FIELDSET_ID;
   }
 
   private getFieldsetClassName(): string {
@@ -194,7 +186,7 @@ export class CkMultiselectGrid extends HTMLElement {
   }
 
   private render() {
-    const labelId = 'scopes-label';
+    const labelId = DEFAULT_LABEL_ID;
     this.titleLabel.id = labelId;
     this.titleLabel.textContent = this.title;
     this.descriptionText.textContent = this.getDescriptionText();

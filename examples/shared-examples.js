@@ -1,21 +1,21 @@
-const BASE_OPTIONS = [
-  { id: 'scope-read', label: 'Scope.Read', name: 'scope', value: 'scope.read' },
-  { id: 'scope-write', label: 'Scope.Write', name: 'scope', value: 'scope.write' },
-  { id: 'scope-manage', label: 'Scope.Manage', name: 'scope', value: 'scope.manage' },
-  { id: 'scope-admin', label: 'Scope.Admin', name: 'scope', value: 'scope.admin' },
-  { id: 'scope-sharing', label: 'Scope.Sharing', name: 'scope', value: 'scope.sharing' },
-  { id: 'scope-audit', label: 'Scope.Audit', name: 'scope', value: 'scope.audit' }
+﻿const BASE_OPTIONS = [
+  { id: 'item-read', label: 'Item.Read', name: 'item', value: 'item.read' },
+  { id: 'item-write', label: 'Item.Write', name: 'item', value: 'item.write' },
+  { id: 'item-manage', label: 'Item.Manage', name: 'item', value: 'item.manage' },
+  { id: 'item-admin', label: 'Item.Admin', name: 'item', value: 'item.admin' },
+  { id: 'item-sharing', label: 'Item.Sharing', name: 'item', value: 'item.sharing' },
+  { id: 'item-audit', label: 'Item.Audit', name: 'item', value: 'item.audit' }
 ];
 
 const COMPLEX_OPTIONS = [
-  { id: 'scope-read', label: 'Scope.Read (GET)', name: 'scope', value: 'scope.read' },
-  { id: 'scope-write', label: 'Scope.Write (POST)', name: 'scope', value: 'scope.write' },
-  { id: 'scope-delete', label: 'Scope.Delete (DELETE)', name: 'scope', value: 'scope.delete' },
-  { id: 'scope-manage-users', label: 'Scope.ManageUsers', name: 'scope', value: 'scope.manage.users' },
-  { id: 'scope-manage-apps', label: 'Scope.ManageApps', name: 'scope', value: 'scope.manage.apps' },
-  { id: 'scope-reporting', label: 'Scope.Reporting', name: 'scope', value: 'scope.reporting' },
-  { id: 'scope-analytics', label: 'Scope.Analytics', name: 'scope', value: 'scope.analytics' },
-  { id: 'scope-exports', label: 'Scope.Exports', name: 'scope', value: 'scope.exports' }
+  { id: 'item-read', label: 'Item.Read (GET)', name: 'item', value: 'item.read' },
+  { id: 'item-write', label: 'Item.Write (POST)', name: 'item', value: 'item.write' },
+  { id: 'item-delete', label: 'Item.Delete (DELETE)', name: 'item', value: 'item.delete' },
+  { id: 'item-manage-users', label: 'Item.ManageUsers', name: 'item', value: 'item.manage.users' },
+  { id: 'item-manage-apps', label: 'Item.ManageApps', name: 'item', value: 'item.manage.apps' },
+  { id: 'item-reporting', label: 'Item.Reporting', name: 'item', value: 'item.reporting' },
+  { id: 'item-analytics', label: 'Item.Analytics', name: 'item', value: 'item.analytics' },
+  { id: 'item-exports', label: 'Item.Exports', name: 'item', value: 'item.exports' }
 ];
 
 function buildOptions(prefix, count) {
@@ -33,8 +33,8 @@ function buildOptions(prefix, count) {
 export const optionsCatalog = {
   base: BASE_OPTIONS,
   complex: COMPLEX_OPTIONS,
-  medium: buildOptions('scope', 16),
-  large: buildOptions('scope', 48)
+  medium: buildOptions('item', 16),
+  large: buildOptions('item', 48)
 };
 
 export function setGridData(grid, options = optionsCatalog.base, selected = []) {
@@ -72,7 +72,7 @@ export function observeSelections(grid, callback) {
   };
 }
 
-export function syncHiddenInput(form, grid, inputName = 'scopes') {
+export function syncHiddenInput(form, grid, inputName = 'selections') {
   if (!form || !grid) return;
   const hidden = form.querySelector(`input[name="${inputName}"]`) ?? document.createElement('input');
   hidden.type = 'hidden';
@@ -88,7 +88,7 @@ export function syncHiddenInput(form, grid, inputName = 'scopes') {
 export function simulateLoading(wrapper, grid, loaderEl, promiseFactory) {
   if (!wrapper || !grid || !loaderEl) return;
   wrapper.dataset.state = 'loading';
-  loaderEl.textContent = 'Loading scopes…';
+  loaderEl.textContent = 'Loading items...';
   promiseFactory().then(({ options, selected }) => {
     setGridData(grid, options, selected);
     wrapper.dataset.state = 'ready';
@@ -96,7 +96,7 @@ export function simulateLoading(wrapper, grid, loaderEl, promiseFactory) {
   }).catch(error => {
     console.error(error);
     wrapper.dataset.state = 'error';
-    loaderEl.textContent = 'Failed to load scopes';
+    loaderEl.textContent = 'Failed to load items';
   });
 }
 
@@ -105,7 +105,7 @@ export function logEvents(grid, listEl) {
   const push = event => {
     const time = new Date().toLocaleTimeString();
     const row = document.createElement('li');
-    row.textContent = `${time} • ${event.type} • ${event.detail.option.value}`;
+    row.textContent = `${time} * ${event.type} * ${event.detail.option.value}`;
     listEl.prepend(row);
     const items = Array.from(listEl.querySelectorAll('li'));
     if (items.length > 12) {
@@ -140,3 +140,4 @@ export function attachLifecycleDebug(grid, logEl) {
   });
   attributeChanged.observe(grid, { attributes: true });
 }
+
