@@ -16,7 +16,7 @@
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": "./tsconfig.json"
+    "project": ["./tsconfig.json", "./tsconfig.test.json"]
   },
   "plugins": [
     "@typescript-eslint",
@@ -32,7 +32,8 @@
     "jest/expect-expect": "error",
     "jest/no-disabled-tests": "warn",
     "jest/no-focused-tests": "error",
-    "jest/valid-expect": "error"
+    "jest/valid-expect": "error",
+    "no-undef": "off"
   },
   "ignorePatterns": [
     "dist/",

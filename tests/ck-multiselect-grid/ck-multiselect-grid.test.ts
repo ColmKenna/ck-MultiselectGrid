@@ -164,7 +164,7 @@ describe('CkMultiselectGrid Component', () => {
     expect(readInput?.classList.contains('multiselect-input')).toBe(true);
     expect(readInput?.getAttribute('name')).toBe('Item.Read');
     expect(readInput?.getAttribute('value')).toBe('Item.Read');
-    expect(readInput?.getAttribute('aria-describedby')).toBe('item.read-desc');
+    // aria-describedby removed to avoid redundant screen reader announcements
     expect(readInput?.hasAttribute('checked')).toBe(false);
 
     const writeInput = element.shadowRoot?.getElementById(
@@ -308,30 +308,31 @@ describe('CkMultiselectGrid Component', () => {
     expect(eventDetail.checked).toBe(false);
   });
 
-  test('should toggle checkbox when pill is clicked', () => {
+  test('should toggle checkbox when label is clicked', () => {
     element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
     element.connectedCallback();
 
     const checkbox = element.shadowRoot?.getElementById(
       'item.read'
     ) as HTMLInputElement | null;
-    const pill = element.shadowRoot?.querySelector(
-      '.multiselect-pill'
-    ) as HTMLElement | null;
+    const label = element.shadowRoot?.querySelector(
+      'label[for="item.read"]'
+    ) as HTMLLabelElement | null;
 
     expect(checkbox).toBeTruthy();
-    expect(pill).toBeTruthy();
-    if (!checkbox || !pill) return;
+    expect(label).toBeTruthy();
+    if (!checkbox || !label) return;
 
     expect(checkbox.checked).toBe(false);
     expect(checkbox.hasAttribute('checked')).toBe(false);
 
-    pill.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    // Native label click toggles the checkbox
+    label.click();
 
     expect(checkbox.checked).toBe(true);
     expect(checkbox.hasAttribute('checked')).toBe(true);
 
-    pill.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    label.click();
 
     expect(checkbox.checked).toBe(false);
     expect(checkbox.hasAttribute('checked')).toBe(false);
@@ -431,7 +432,10 @@ describe('CkMultiselectGrid form-associated behavior', () => {
   });
 
   test('should declare static formAssociated = true', () => {
-    expect((CkMultiselectGrid as unknown as { formAssociated: boolean }).formAssociated).toBe(true);
+    expect(
+      (CkMultiselectGrid as unknown as { formAssociated: boolean })
+        .formAssociated
+    ).toBe(true);
   });
 
   test('should have name in observedAttributes', () => {
@@ -448,7 +452,10 @@ describe('CkMultiselectGrid form-associated behavior', () => {
   });
 
   test('should include selected values in FormData on form submission', () => {
-    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta', 'gamma']));
+    element.setAttribute(
+      'availableItems',
+      JSON.stringify(['alpha', 'beta', 'gamma'])
+    );
     element.setAttribute('selectedItems', JSON.stringify(['alpha', 'gamma']));
     element.connectedCallback();
 
@@ -469,7 +476,9 @@ describe('CkMultiselectGrid form-associated behavior', () => {
     expect(formData.get('test-selection')).toBe(JSON.stringify([]));
 
     // Select an option
-    const checkbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    const checkbox = element.shadowRoot?.getElementById(
+      'alpha'
+    ) as HTMLInputElement;
     expect(checkbox).toBeTruthy();
     checkbox.checked = true;
     checkbox.dispatchEvent(new Event('change', { bubbles: true }));
@@ -484,8 +493,12 @@ describe('CkMultiselectGrid form-associated behavior', () => {
     element.connectedCallback();
 
     // Verify initial state
-    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
-    const betaCheckbox = element.shadowRoot?.getElementById('beta') as HTMLInputElement;
+    const alphaCheckbox = element.shadowRoot?.getElementById(
+      'alpha'
+    ) as HTMLInputElement;
+    const betaCheckbox = element.shadowRoot?.getElementById(
+      'beta'
+    ) as HTMLInputElement;
     expect(alphaCheckbox?.checked).toBe(true);
     expect(betaCheckbox?.checked).toBe(false);
 
@@ -519,7 +532,9 @@ describe('CkMultiselectGrid form-associated behavior', () => {
     expect(element.value).toEqual(['beta']);
 
     // Change selection
-    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
+    const alphaCheckbox = element.shadowRoot?.getElementById(
+      'alpha'
+    ) as HTMLInputElement;
     alphaCheckbox.checked = true;
     alphaCheckbox.dispatchEvent(new Event('change', { bubbles: true }));
 
@@ -527,15 +542,24 @@ describe('CkMultiselectGrid form-associated behavior', () => {
   });
 
   test('should set value property and update checkboxes', () => {
-    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta', 'gamma']));
+    element.setAttribute(
+      'availableItems',
+      JSON.stringify(['alpha', 'beta', 'gamma'])
+    );
     element.setAttribute('selectedItems', JSON.stringify([]));
     element.connectedCallback();
 
     element.value = ['beta', 'gamma'];
 
-    const alphaCheckbox = element.shadowRoot?.getElementById('alpha') as HTMLInputElement;
-    const betaCheckbox = element.shadowRoot?.getElementById('beta') as HTMLInputElement;
-    const gammaCheckbox = element.shadowRoot?.getElementById('gamma') as HTMLInputElement;
+    const alphaCheckbox = element.shadowRoot?.getElementById(
+      'alpha'
+    ) as HTMLInputElement;
+    const betaCheckbox = element.shadowRoot?.getElementById(
+      'beta'
+    ) as HTMLInputElement;
+    const gammaCheckbox = element.shadowRoot?.getElementById(
+      'gamma'
+    ) as HTMLInputElement;
 
     expect(alphaCheckbox?.checked).toBe(false);
     expect(betaCheckbox?.checked).toBe(true);
@@ -547,9 +571,15 @@ describe('CkMultiselectGrid form-associated behavior', () => {
     element.connectedCallback();
 
     // Simulate browser calling formDisabledCallback
-    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(true);
+    (
+      element as unknown as {
+        formDisabledCallback: (disabled: boolean) => void;
+      }
+    ).formDisabledCallback(true);
 
-    const checkboxes = element.shadowRoot?.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    const checkboxes = element.shadowRoot?.querySelectorAll(
+      'input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
     checkboxes.forEach(cb => {
       expect(cb.disabled).toBe(true);
     });
@@ -559,12 +589,135 @@ describe('CkMultiselectGrid form-associated behavior', () => {
     element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
     element.connectedCallback();
 
-    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(true);
-    (element as unknown as { formDisabledCallback: (disabled: boolean) => void }).formDisabledCallback(false);
+    (
+      element as unknown as {
+        formDisabledCallback: (disabled: boolean) => void;
+      }
+    ).formDisabledCallback(true);
+    (
+      element as unknown as {
+        formDisabledCallback: (disabled: boolean) => void;
+      }
+    ).formDisabledCallback(false);
 
-    const checkboxes = element.shadowRoot?.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    const checkboxes = element.shadowRoot?.querySelectorAll(
+      'input[type="checkbox"]'
+    ) as NodeListOf<HTMLInputElement>;
     checkboxes.forEach(cb => {
       expect(cb.disabled).toBe(false);
     });
+  });
+});
+
+describe('CkMultiselectGrid lifecycle and cleanup', () => {
+  let element: CkMultiselectGrid;
+
+  beforeEach(() => {
+    element = new CkMultiselectGrid();
+    document.body.appendChild(element);
+  });
+
+  afterEach(() => {
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  });
+
+  test('should have a disconnectedCallback method', () => {
+    expect(
+      typeof (element as unknown as { disconnectedCallback?: () => void })
+        .disconnectedCallback
+    ).toBe('function');
+  });
+
+  test('should not throw when disconnectedCallback is called', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha', 'beta']));
+    element.connectedCallback();
+
+    expect(() => {
+      document.body.removeChild(element);
+    }).not.toThrow();
+  });
+
+  test('should still respond to checkbox changes after re-connection', () => {
+    element.setAttribute('availableItems', JSON.stringify(['alpha']));
+    element.connectedCallback();
+
+    // Remove and re-add element
+    document.body.removeChild(element);
+    document.body.appendChild(element);
+
+    const handler = jest.fn();
+    element.addEventListener('ck-multiselect-option-selected', handler);
+
+    const checkbox = element.shadowRoot?.getElementById(
+      'alpha'
+    ) as HTMLInputElement;
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('CkMultiselectGrid accessibility improvements', () => {
+  let element: CkMultiselectGrid;
+
+  beforeEach(() => {
+    element = new CkMultiselectGrid();
+    document.body.appendChild(element);
+  });
+
+  afterEach(() => {
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  });
+
+  test('should not have redundant aria-describedby on checkboxes', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
+    element.connectedCallback();
+
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement;
+    expect(checkbox).toBeTruthy();
+
+    // aria-describedby should NOT be present since label already provides accessible name
+    expect(checkbox.hasAttribute('aria-describedby')).toBe(false);
+  });
+
+  test('should toggle checkbox via label click (label for attribute)', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
+    element.connectedCallback();
+
+    const checkbox = element.shadowRoot?.getElementById(
+      'item.read'
+    ) as HTMLInputElement;
+    const label = element.shadowRoot?.querySelector(
+      'label[for="item.read"]'
+    ) as HTMLLabelElement;
+
+    expect(checkbox).toBeTruthy();
+    expect(label).toBeTruthy();
+    expect(checkbox.checked).toBe(false);
+
+    // Clicking label should toggle checkbox via native behavior
+    label.click();
+
+    expect(checkbox.checked).toBe(true);
+  });
+
+  test('pill should not have click handler data attribute', () => {
+    element.setAttribute('availableItems', JSON.stringify(['Item.Read']));
+    element.connectedCallback();
+
+    const pill = element.shadowRoot?.querySelector(
+      '.multiselect-pill'
+    ) as HTMLElement;
+    expect(pill).toBeTruthy();
+
+    // data-checkbox-id was used for pill click handling; should no longer exist
+    expect(pill.hasAttribute('data-checkbox-id')).toBe(false);
   });
 });

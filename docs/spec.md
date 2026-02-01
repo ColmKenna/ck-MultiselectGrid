@@ -27,7 +27,6 @@ The component renders the following structure inside its shadow root:
           id="{option.id}"
           name="{option.name}"
           value="{option.value}"
-          aria-describedby="{option.id}-desc"
           {checked}
         />
         <label class="multiselect-label" for="{option.id}">
@@ -38,6 +37,8 @@ The component renders the following structure inside its shadow root:
   </fieldset>
 </div>
 ```
+
+**Note:** The `aria-describedby` attribute was removed from checkboxes because the associated `<label>` already provides the accessible name, avoiding redundant screen reader announcements.
 
 ## Attributes
 
@@ -110,12 +111,14 @@ The component renders the following structure inside its shadow root:
 - Fieldset metadata (`id`, classes) updates whenever `fieldset-id` or `fieldset-class` mutates.
 - Available/selected item arrays are parsed from JSON (strings or objects) and drive the checkbox grid; attribute mutations trigger a re-render so the grid stays in sync.
 - Selected values missing from the available list are converted into synthetic options appended to the grid using the trimmed string as the pill text and checkbox metadata, ensuring persisted selections remain visible even when their source data is temporarily unavailable.
-- Each `.multiselect-pill` proxies pointer clicks to its associated checkbox, so the entire pill/card surface toggles selection without forcing the user to target the hidden checkbox.
-- Checkbox `checked` attributes are re-synced on every change event (including pill clicks) so attribute selectors and DOM inspection stay truthful to the current state.
+- The `<label>` element with `for` attribute handles checkbox toggling natively—clicking anywhere on the label (including the pill) toggles the associated checkbox without custom JavaScript handlers.
+- Checkbox `checked` attributes are re-synced on every change event so attribute selectors and DOM inspection stay truthful to the current state.
 - `.multiselect-option` elements mirror the checkbox state via a `data-selected="true|false"` attribute and an `is-selected` class, enabling CSS fallbacks for environments that lack `:has()` support.
-- Each checkbox references a pill via `aria-describedby`, and the grid container keeps `role="group"` + `aria-labelledby="ck-multiselect-grid-label"` for assistive context.
+- The grid container keeps `role="group"` + `aria-labelledby="ck-multiselect-grid-label"` for assistive context; labels provide accessible names for checkboxes.
 - `textContent` assignment avoids interpreting user strings as HTML.
 - Re-connecting the element reuses the existing shadow DOM without duplication.
+- Event delegation is used for checkbox change events, with a single listener on the multiselect group container rather than per-element listeners.
+- `disconnectedCallback` cleans up event listeners to prevent memory leaks.
 
 ## Form Association
 

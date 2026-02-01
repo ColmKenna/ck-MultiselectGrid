@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "@types/jest"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "."
+  },
+  "include": [
+    "tests/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

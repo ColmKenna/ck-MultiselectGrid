@@ -26,8 +26,17 @@ export class CkMultiselectGrid extends HTMLElement {
   private currentSelectedValues: string[] = [];
   private isDisabled = false;
 
+  /** WeakMap associating checkbox inputs with their option metadata. */
   private inputOptionMap = new WeakMap<HTMLInputElement, MultiselectOption>();
+  /** WeakMap associating checkbox inputs with their container div. */
   private inputContainerMap = new WeakMap<HTMLInputElement, HTMLDivElement>();
+  /** Cached checkbox references for efficient sync operations. */
+  private checkboxCache: HTMLInputElement[] = [];
+
+  /**
+   * Delegated event handler for checkbox change events.
+   * Uses event delegation on multiselectGroup to avoid per-element listeners.
+   */
   private handleInputChange = (event: Event) => {
     const target = event.target;
     if (!(target instanceof HTMLInputElement) || target.type !== 'checkbox') {
@@ -117,6 +126,23 @@ export class CkMultiselectGrid extends HTMLElement {
     this.currentSelectedValues = [...this.initialSelectedValues];
     this.render();
     this.updateFormValue();
+
+    // Set up event delegation on the multiselect group container
+    this.multiselectGroup?.addEventListener('change', this.handleInputChange);
+  }
+
+  /**
+   * Lifecycle callback invoked when the element is removed from the DOM.
+   * Cleans up event listeners to prevent memory leaks.
+   */
+  disconnectedCallback() {
+    // Remove delegated event listener
+    this.multiselectGroup?.removeEventListener(
+      'change',
+      this.handleInputChange
+    );
+    // Clear checkbox cache to allow GC
+    this.checkboxCache = [];
   }
 
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
@@ -171,7 +197,7 @@ export class CkMultiselectGrid extends HTMLElement {
 
   // Form-associated lifecycle callback: called when element is added/removed from form
   formAssociatedCallback() {
-    // No special action needed; internals handle form association
+    // ElementInternals automatically handles form association; no custom logic required.
   }
 
   // Form-associated lifecycle callback: called when form is reset
@@ -206,11 +232,9 @@ export class CkMultiselectGrid extends HTMLElement {
   private syncCheckboxesToCurrentValues() {
     if (!this.multiselectGroup) return;
     const selectedSet = new Set(this.currentSelectedValues);
-    const checkboxes = this.multiselectGroup.querySelectorAll(
-      'input[type="checkbox"]'
-    ) as NodeListOf<HTMLInputElement>;
 
-    checkboxes.forEach(checkbox => {
+    // Use cached checkbox references for efficient sync
+    this.checkboxCache.forEach(checkbox => {
       const shouldBeChecked = selectedSet.has(checkbox.value);
       checkbox.checked = shouldBeChecked;
       this.syncCheckboxCheckedAttribute(checkbox);
@@ -219,12 +243,8 @@ export class CkMultiselectGrid extends HTMLElement {
   }
 
   private syncDisabledState() {
-    if (!this.multiselectGroup) return;
-    const checkboxes = this.multiselectGroup.querySelectorAll(
-      'input[type="checkbox"]'
-    ) as NodeListOf<HTMLInputElement>;
-
-    checkboxes.forEach(checkbox => {
+    // Use cached checkbox references for efficient sync
+    this.checkboxCache.forEach(checkbox => {
       checkbox.disabled = this.isDisabled;
     });
   }
@@ -239,6 +259,19 @@ export class CkMultiselectGrid extends HTMLElement {
     }
   }
 
+  /**
+   * Initializes the component's shadow DOM structure.
+   * Creates the following hierarchy:
+   *   .ck-multiselect-grid (container)
+   *     └── fieldset.multiselect-fieldset
+   *           ├── .form-group
+   *           │     ├── .form-label (titleLabel)
+   *           │     └── .form-text (descriptionText)
+   *           └── .multiselect-grid[role="group"] (multiselectGroup)
+   *                 └── .multiselect-option * n (rendered by renderMultiselectOptions)
+   *
+   * Uses constructable stylesheets when available, with <style> fallback.
+   */
   private ensureInitialized() {
     if (this.initialized) return;
     this.initialized = true;
@@ -341,6 +374,11 @@ export class CkMultiselectGrid extends HTMLElement {
     });
 
     this.multiselectGroup.replaceChildren(...optionNodes);
+
+    // Cache checkbox references for efficient sync operations
+    this.checkboxCache = Array.from(
+      this.multiselectGroup.querySelectorAll('input[type="checkbox"]')
+    ) as HTMLInputElement[];
   }
 
   private buildOptionNode(
@@ -356,13 +394,14 @@ export class CkMultiselectGrid extends HTMLElement {
     checkbox.id = option.id;
     checkbox.name = option.name;
     checkbox.value = option.value;
-    checkbox.setAttribute('aria-describedby', `${option.id}-desc`);
+    // Note: aria-describedby removed; the <label> already provides the accessible name
     this.inputOptionMap.set(checkbox, option);
     this.inputContainerMap.set(checkbox, optionDiv);
-    checkbox.addEventListener('change', this.handleInputChange);
+    // Event listener handled via delegation on multiselectGroup
     if (isSelected) {
       checkbox.checked = true;
-      checkbox.setAttribute('checked', 'checked');
+      // Boolean attribute: presence indicates checked state
+      checkbox.setAttribute('checked', '');
     }
     this.setOptionSelectionState(optionDiv, isSelected);
 
@@ -374,8 +413,7 @@ export class CkMultiselectGrid extends HTMLElement {
     pill.className = 'multiselect-pill';
     pill.id = `${option.id}-desc`;
     pill.textContent = option.label;
-    pill.dataset.checkboxId = option.id;
-    pill.addEventListener('click', this.handlePillClick);
+    // Note: pill click handler removed; <label> natively toggles the checkbox
 
     label.appendChild(pill);
     optionDiv.appendChild(checkbox);
@@ -417,31 +455,12 @@ export class CkMultiselectGrid extends HTMLElement {
 
   private syncCheckboxCheckedAttribute(input: HTMLInputElement) {
     if (input.checked) {
-      input.setAttribute('checked', 'checked');
+      // Boolean attribute: presence indicates checked state
+      input.setAttribute('checked', '');
     } else {
       input.removeAttribute('checked');
     }
   }
-
-  private handlePillClick = (event: MouseEvent) => {
-    if (!(event.currentTarget instanceof HTMLElement)) {
-      return;
-    }
-
-    const checkboxId = event.currentTarget.dataset.checkboxId;
-    if (!checkboxId) {
-      return;
-    }
-
-    const checkbox = this.shadow.getElementById(checkboxId);
-    if (!(checkbox instanceof HTMLInputElement)) {
-      return;
-    }
-
-    event.preventDefault();
-    checkbox.checked = !checkbox.checked;
-    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-  };
 
   private updateOptionSelectionState(input: HTMLInputElement) {
     const container = this.inputContainerMap.get(input);
@@ -483,12 +502,18 @@ export class CkMultiselectGrid extends HTMLElement {
     } catch (error) {
       window.console.warn(
         `[ck-multiselect-grid] Failed to parse ${attributeName}:`,
-        error
+        { error, raw }
       );
       return [];
     }
   }
 
+  /**
+   * Normalizes an option entry (string or object) into a MultiselectOption.
+   * For objects, the fallback priority for determining the value is:
+   *   value → label → name
+   * String entries use the trimmed string for all fields.
+   */
   private normalizeOption(
     entry: unknown,
     index: number
