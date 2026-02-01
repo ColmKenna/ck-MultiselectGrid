@@ -1,5 +1,5 @@
 {
-  "name": "@colmkenna/ck-webcomponents",
+  "name": "@colmkenna/ck-multiselect-grid",
   "version": "1.0.0",
   "type": "module",
   "description": "A web component library built with Rollup",
